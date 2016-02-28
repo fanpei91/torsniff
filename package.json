@@ -1,0 +1,23 @@
+{
+    "name": "p2pspider",
+    "description": "DHT Crawler + BitTorrent Crawler = P2P Spider",
+    "version": "0.0.1",
+    "author": {
+        "name": "Fuck-You-GFW"
+    },
+    "bugs": {
+        "url": "https://github.com/Fuck-You-GFW/p2pspider"
+    },
+    "dependencies": {
+        "bencode": "^0.7.0",
+        "bitfield": "^1.1.2",
+        "lru": "^2.0.0"
+    },
+    "keywords": [
+        "torrent",
+        "bittorrent",
+        "p2p",
+        "dht"
+    ],
+    "license": "MIT"
+}
