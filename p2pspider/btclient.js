@@ -22,7 +22,7 @@ const BT_MSG_ID = 20;
 
 const lru = LRU({  max: 100000, maxAge: 1000 * 60 * 10});
 
-const Wire = function(infohash, timeout) {
+const Wire = function(infohash) {
     stream.Duplex.call(this);
     
     this._bitfield = new BitField(0, { grow: BITFIELD_GROW });
@@ -242,7 +242,7 @@ BTClient.prototype.download = function(rinfo, infohash) {
     var socket = new net.Socket();
     socket.setTimeout(this.timeout || 5000);
     socket.connect(rinfo.port, rinfo.address, () => {
-        var wire = new Wire(infohash, this.timeout);
+        var wire = new Wire(infohash);
         socket.pipe(wire).pipe(socket);
         wire.on('metadata', (metadata, infoHash) => {
             this.emit('complete', metadata, infoHash, rinfo);
