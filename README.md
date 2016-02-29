@@ -28,7 +28,7 @@ git clone https://github.com/Fuck-You-GFW/p2pspider
 打造成人人都能用的神器, 可以用它搜索种子; 下载资源; 共享数据库; 如果是视频, 可边下载边播放; 打造成分布式快播是可以有滴. :)
 
 ## 感谢
-在开发这个项目时, 从 [bittorrent-protocol](https://github.com/feross/bittorrent-protocol) 和  [ut_metadata](https://github.com/feross/ut_metadata) 借鉴了一些实现代码. 非常感谢其作者 [@reross](https://github.com/feross) 指点迷津.
+在开发这个项目时, 从 [bittorrent-protocol](https://github.com/feross/bittorrent-protocol) 和  [ut_metadata](https://github.com/feross/ut_metadata) 借鉴了一些实现代码. 非常感谢其作者 [@feross](https://github.com/feross) 指点迷津.
 
 ## 交流
 如果你对此项目感兴趣, 不管你是不是开发者, 都可加 QQ 群(145234507)进行实时交流. 虽然 QQ 群看起来很 Low, 但不得不说, 特别适合快速交流.
