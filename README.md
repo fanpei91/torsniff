@@ -10,7 +10,7 @@ git clone https://github.com/Fuck-You-GFW/p2pspider
 ```
 
 ## 使用
-初次使用前, 请执行`npm install`安装依赖包. 执行`node example.js`便可运行程序. **建议放在公网 VPS 上运行, 在局域网里几乎没效果.**
+初次使用前, 请执行`npm install`安装依赖包. 执行`node example.js`便可运行程序. 执行后, 需要等待一段时间才会有数据输出, 等待多久看你的网络环境. **建议放在公网 VPS 上运行, 在局域网里几乎没效果, 最好是国外的.**
 
 ## 定制
 你可以修改`example.js`文件对爬取到的数据进行处理/保存. 详情请看`example.js`的例子, 很简单滴.
