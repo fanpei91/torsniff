@@ -21,5 +21,5 @@ DHTSpider.start({
     btclient: btclient,
     address: '0.0.0.0',
     port: 6219,
-    nodesMaxSize: 4000
+    nodesMaxSize: 4000  // 值越大, 网络, 内存, CPU 消耗就越大, 收集速度会变慢.
 });
