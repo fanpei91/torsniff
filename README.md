@@ -1,3 +1,5 @@
+[English Version](https://github.com/Fuck-You-GFW/p2pspider/blob/master/README-en.md)
+
 ## 介绍
 p2pspider 是一个 DHT 爬虫 + BT Client 的结合体, 从全球 DHT 网络里"嗅探"人们正在下载的资源, 并把资源的`metadata`(种子的主要信息)从 远程 BT 客户端下载, 并生成资源磁力链接. 通过磁力链接, 你就可以下载到资源文件.
 
