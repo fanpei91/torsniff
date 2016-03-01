@@ -2,6 +2,9 @@
 
 p2pspider 是一个 DHT 爬虫 + BT 客户端的结合体, 从全球 DHT 网络里"嗅探"人们正在下载的资源, 并把资源的`metadata`(种子的主要信息)从远程 BT 客户端下载, 并生成资源磁力链接. 通过磁力链接, 你就可以下载到资源文件.
 
+[English document](https://github.com/Fuck-You-GFW/p2pspider#Introduction)
+
+
 ## 用途
 
 你可以使用 p2pspider 打造私人种子库, 也可拿它做资源数据挖掘与分析。
@@ -57,5 +60,64 @@ fork 并拉取代码后，执行 `npm install` 安装依赖（安装的依赖较
 不要拿这个爬虫爬取的数据分享到互联网, 因为很多敏感资源; 色情资源; 侵权资源. 否则后果自负喔.
 
 ## 许可证
+MIT
 
+---
+
+##Introduction
+p2pspider is a crawler combined with DHT Spider and BitTorrent Client.
+
+It crawls what people is downloading on the worldwide DHT Network, and `metadata` (the core data of a torrent) from remote BitTorrent Clients. p2pspider also generates Magnet URLs, you can simply download the resources you want by using Magnet URLs.
+
+You can also use p2pspider to build your own BitTorrent database for data crawling and analyzing.
+
+##Install
+```
+npm install p2pspider
+```
+
+##Usage
+
+```js
+var p2pspider = require('p2pspider');
+p2pspider(function(data){
+    console.log(data); // Crawled data
+})
+```
+
+*We highly recommend to run p2pspider on a host which has dedicated public IP.*
+
+##Upcoming features
+* Performance optimization
+* Data storage
+* Cross-platform GUI
+* Data sharing
+* Data downloading
+* Video streaming
+
+##Goals
+* Make p2pspider be an easy-using tool for you.
+* You can use it to search torrents, to download resources, even to share the database.
+* You can play videos when you're downloading them.
+* Build an another QVod platform is possible.
+
+##Contribute
+After forking the code, use ```npm install``` to install required packages.
+
+Code wrote with ```ES6```, and used Babel to compile.
+
+Use ```npm run watch``` to keep compiling. It will compile automatically when code edited.
+
+Run ```node test/index.js``` to review results.
+
+##Protocols
+[bep_0005](http://www.bittorrent.org/beps/bep_0005.html), [bep_0003](http://www.bittorrent.org/beps/bep_0003.html), [bep_0010](http://www.bittorrent.org/beps/bep_0010.html), [bep_0009](http://www.bittorrent.org/beps/bep_0009.html)
+
+##Thanks
+When I was developing this project, I references some code from [bittorrent-protocol](https://github.com/feross/bittorrent-protocol) and  [ut_metadata](https://github.com/feross/ut_metadata), thanks to their author,  [@feross](https://github.com/feross)'s pointing.
+
+##Notice
+Please don't share the data p2pspider crawled to the internet. Because sometimes it crawls sensitive/copyright/porn data.
+
+##License
 MIT
