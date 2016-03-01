@@ -1,13 +1,13 @@
 {
   "name": "p2pspider",
-  "description": "DHT Crawler + BitTorrent Crawler = P2P Spider",
+  "description": "DHT Spider + BitTorrent Client = P2P Spider",
   "version": "0.0.4",
   "author": {
     "name": "Fuck-You-GFW"
   },
   "main": "lib/index.js",
   "bugs": {
-    "url": "https://github.com/Fuck-You-GFW/p2pspider/issue"
+    "url": "https://github.com/Fuck-You-GFW/p2pspider/issues"
   },
   "scripts": {
     "test": "npm run eslint",
