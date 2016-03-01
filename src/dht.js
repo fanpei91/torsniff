@@ -31,6 +31,9 @@ export default class DHTSpider {
   }
 
   sendKRPC(msg, rinfo = {}){
+    if (rinfo.port >= 65536 || rinfo.port <= 0) {
+      return;
+    }
     let buf = bencode.encode(msg);
     this.udp.send(buf, 0, buf.length, rinfo.port, rinfo.address);
   }

@@ -92,6 +92,9 @@ export default class BTClient extends EventEmitter {
       let wire = new Wire(infohash);
       socket.pipe(wire).pipe(socket);
       wire.on('metadata', (metadata, infoHash) => {
+        //destroy socket when get metadata
+        socket.destroy();
+
         metadata = this.formatMetaData(metadata);
         if(!metadata){
           return;
