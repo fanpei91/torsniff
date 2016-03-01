@@ -58,7 +58,7 @@ export default class BTClient extends EventEmitter {
     }else{
       data.files = [{
         size: data.size,
-        name: data.name
+        path: data.name
       }];
     }
 
