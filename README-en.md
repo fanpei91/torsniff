@@ -1,7 +1,7 @@
 ##Intro
 P2P Spider is a crawler combined with DHT Crawler and BitTorrent Client. 
 
-It crawls what people is downloading on the worldwide DHT Network, and Metadata (the data of a torrent) from remote BitTorrent Clients. P2P Spider also generates Magnet URLs, you can simply download the file you want by using Magnet. 
+It crawls what people is downloading on the worldwide DHT Network, and Metadata (the data of a torrent) from remote BitTorrent Clients. P2P Spider also generates Magnet URLs, you can import the URLs to your local BitTorrent Client in order to download the files you want.
 
 You can also use P2P Spider to build your own BitTorrent database for data crawling and analyzing.
 
@@ -40,7 +40,7 @@ After forking the code, use ```npm install``` to install required packages.
 
 Code wrote with ```ES6```, and used Babel to compile.
 
-Use ```npm run watch``` to keep compiling. It will compile automatically when code edited.
+Use ```npm run watch``` to keep compiling, it will compile automatically when code edited.
 
 Run ```node test/index.js``` to review results.
 
