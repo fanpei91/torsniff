@@ -67,9 +67,9 @@ MIT
 ##Introduction
 p2pspider is a crawler combined with DHT Spider and BitTorrent Client.
 
-It crawls what people is downloading on the worldwide DHT Network, and `metadata` (the core data of a torrent) from remote BitTorrent Clients. p2pspider also generates Magnet URLs, you can simply download the resources you want by using Magnet URLs.
+It crawls what people is downloading on the worldwide DHT Network, and `metadata` (the core data of a torrent) from remote BitTorrent Clients. p2pspider also generates magnet URLs, you can import the URLs to your local BitTorrent Client in order to download the resources you want.
 
-You can also use p2pspider to build your own BitTorrent database for data crawling and analyzing.
+You can also use p2pspider to build your own torrents database for data mining and analyzing.
 
 ##Install
 ```
