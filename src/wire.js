@@ -62,7 +62,9 @@ export default class Wire extends stream.Duplex {
 
   _onExtended(ext, buf){
     if (ext === 0) {
-      this._onExtHandshake(bencode.decode(buf));
+      try{
+        this._onExtHandshake(bencode.decode(buf));
+      }catch(e){}
     }else {
       this._onPiece(buf);
     }
@@ -134,7 +136,10 @@ export default class Wire extends stream.Duplex {
     let peerID = utils.randomID();
     let packet = Buffer.concat([
       new Buffer([BT_PROTOCOL.length]),
-      BT_PROTOCOL, BT_RESERVED, this._infohash, peerID
+      BT_PROTOCOL, 
+      BT_RESERVED, 
+      this._infohash, 
+      peerID
     ]);
     this._sendPacket(packet);
   }
@@ -213,5 +218,9 @@ export default class Wire extends stream.Duplex {
     }
     
     next(null);
+  }
+
+  _read(){
+    
   }
 }

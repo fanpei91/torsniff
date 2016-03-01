@@ -27,6 +27,7 @@ export default class DHTSpider {
     this.port = options.port;
     this.udp = dgram.createSocket('udp4');
     this.ktable = new KTable(options.nodesMaxSize || NODES_MAX_SIZE);
+    this.bootstrapNodes = options.bootstrapNodes || BOOTSTRAP_NODES;
   }
 
   sendKRPC(msg, rinfo = {}){
@@ -59,7 +60,7 @@ export default class DHTSpider {
   }
 
   joinDHTNetwork(){
-    BOOTSTRAP_NODES.forEach(node => {
+    this.bootstrapNodes.forEach(node => {
       this.sendFindNodeRequest({
         address: node[0], 
         port: node[1]
@@ -139,14 +140,18 @@ export default class DHTSpider {
   }
 
   onMessage(msg, rinfo){
-    msg = bencode.decode(msg);
-    if (msg.y === 'r' && msg.r.nodes) {
+    try{
+      msg = bencode.decode(msg);
+    }catch(e){
+      return;
+    }
+    let y = msg.y && msg.y.toString();
+    let q = msg.q && msg.q.toString();
+    if (y === 'r' && msg.r.nodes) {
       this.onFindNodeResponse(msg.r.nodes);
-    }
-    else if (msg.y === 'q' && msg.q === 'get_peers') {
+    }else if (y === 'q' && q === 'get_peers') {
       this.onGetPeersRequest(msg, rinfo);
-    }
-    else if (msg.y === 'q' && msg.q === 'announce_peer') {
+    }else if (y === 'q' && q === 'announce_peer') {
       this.onAnnouncePeerRequest(msg, rinfo);
     }
   }
@@ -163,9 +168,9 @@ export default class DHTSpider {
     });
 
     this.udp.on('error', err => {
-      console.log(err.stack);
+      console.log('error', err.stack);
     });
-    
+
     setInterval(() => this.joinDHTNetwork(), 1000);
     setInterval(() => this.makeNeighbours(), 1000);
   }

@@ -4,11 +4,7 @@ import net from 'net';
 import EventEmitter from 'events';
 import LRU from 'lru';
 import Wire from './wire';
-
-const lru = LRU({
-  max: 100000, 
-  maxAge: 1000 * 60 * 10
-});
+import utils from './utils';
 
 export default class BTClient extends EventEmitter {
   /**
@@ -19,6 +15,61 @@ export default class BTClient extends EventEmitter {
   constructor(options = {}){
     super();
     this.timeout = options.timeout || 5000;
+    this.lru = LRU({
+      max: 100000, 
+      maxAge: 1000 * 60 * 10
+    });
+  }
+  /**
+   * format meta data
+   * @param  {[type]} metadata [description]
+   * @return {[type]}          [description]
+   */
+  formatMetaData(metadata){
+    let info = metadata.info;
+    let name = (info['utf-8.name'] || info.name);
+    if(!name){
+      return;
+    }
+    name = utils.toUtf8String(name);
+
+    let data = {
+      name,
+      size: info.length
+    };
+    if(info.private){
+      data.private = info.private;
+    }
+    if(info.files){
+      let total = 0;
+      data.files = info.files.map(item => {
+        item.path = item.path.map(it => {
+          return utils.toUtf8String(it);
+        }).join('/');
+        total += item.length;
+        return {
+          size: item.length,
+          path: item.path
+        };
+      }).sort((a, b) => {
+        return a.size > b.size ? -1 : 1;
+      });
+      data.size = total;
+    }else{
+      data.files = [{
+        size: data.size,
+        name: data.name
+      }];
+    }
+
+    let extraProperties = ['source', 'profiles', 'private', 'file-duration', 'file-media', 'pieces'];
+    extraProperties.forEach(item => {
+      if(info[item]){
+        data[item] = info[item];
+      }
+    });
+    
+    return data;
   }
   /**
    * download
@@ -27,17 +78,24 @@ export default class BTClient extends EventEmitter {
    * @return {[type]}          [description]
    */
   download(rinfo = {}, infohash){
-    if (lru.get(infohash) ) {
+    let infoHashHex = infohash.toString('hex');
+    if (this.lru.get(infoHashHex) ) {
       return;
     }
-    lru.set(infohash, true);
+    this.lru.set(infoHashHex, true);
     
     let socket = new net.Socket();
+
     socket.setTimeout(this.timeout);
+
     socket.connect(rinfo.port, rinfo.address, () => {
       let wire = new Wire(infohash);
       socket.pipe(wire).pipe(socket);
       wire.on('metadata', (metadata, infoHash) => {
+        metadata = this.formatMetaData(metadata);
+        if(!metadata){
+          return;
+        }
         this.emit('complete', metadata, infoHash, rinfo);
       });
       wire.sendHandshake();

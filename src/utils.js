@@ -1,6 +1,8 @@
 'use strict';
 
 import crypto from 'crypto';
+import isUtf8 from 'is-utf8';
+import iconvLite from 'iconv-lite';
 
 export default {
   /**
@@ -34,5 +36,16 @@ export default {
    */
   genNeighborID(target, nid){
     return Buffer.concat([target.slice(0, 10), nid.slice(10)]);
+  },
+  /**
+   * to utf8 string
+   * @param  {[type]} buffer [description]
+   * @return {[type]}        [description]
+   */
+  toUtf8String(buffer){
+    if(isUtf8(buffer)){
+      return buffer.toString();
+    }
+    return iconvLite.decode(buffer, 'GB18030');
   }
 };
