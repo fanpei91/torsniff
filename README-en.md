@@ -1,7 +1,7 @@
 ##Intro
 P2P Spider is a crawler combined with DHT Crawler and BitTorrent Client. 
 
-It crawls what people is downloading on the worldwide DHT Network, and Metadata (the data of a torrent) from remote BitTorrent Clients. It also generates Magnet URLs, you can simply download the file you want by using Magnet. 
+It crawls what people is downloading on the worldwide DHT Network, and Metadata (the data of a torrent) from remote BitTorrent Clients. P2P Spider also generates Magnet URLs, you can simply download the file you want by using Magnet. 
 
 You can also use P2P Spider to build your own BitTorrent database for data crawling and analyzing.
 
@@ -31,11 +31,8 @@ p2pspider(function(data){
 
 ##Goals
 * Make P2P Spider be an easy-using tool for you. 
-
 * You can use it to search torrents, to download resources, even to share the database. 
-
 * You can play videos when you're downloading them. 
-
 * Build an another QVod platform is possible.
 
 ##Contribute
@@ -43,9 +40,9 @@ After forking the code, use ```npm install``` to install required packages.
 
 Code wrote with ```ES6```, and used Babel to compile.
 
-Use ```npm run watch``` to keep compiling, when code edited, it compiles automatically.
+Use ```npm run watch``` to keep compiling. It will compile automatically when code edited.
 
-Run ```node test/index.js``` to see results.
+Run ```node test/index.js``` to review results.
 
 ##Protocols
 [bep_0005](http://www.bittorrent.org/beps/bep_0005.html), [bep_0003](http://www.bittorrent.org/beps/bep_0003.html), [bep_0010](http://www.bittorrent.org/beps/bep_0010.html), [bep_0009](http://www.bittorrent.org/beps/bep_0009.html)
