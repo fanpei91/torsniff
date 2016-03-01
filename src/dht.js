@@ -60,7 +60,10 @@ export default class DHTSpider {
 
   joinDHTNetwork(){
     BOOTSTRAP_NODES.forEach(node => {
-      this.sendFindNodeRequest({address: node[0], port: node[1]});
+      this.sendFindNodeRequest({
+        address: node[0], 
+        port: node[1]
+      });
     });
   }
 
@@ -129,7 +132,10 @@ export default class DHTSpider {
       }
     }, rinfo);
     
-    this.btclient.download({address: rinfo.address, port: port}, infohash);
+    this.btclient.download({
+      address: rinfo.address, 
+      port: port
+    }, infohash);
   }
 
   onMessage(msg, rinfo){
@@ -147,10 +153,19 @@ export default class DHTSpider {
 
   start(){
     this.udp.bind(this.port, this.address);
+
+    this.udp.on('listening', () => {
+      console.log('udp start listening:', this.address, this.port);
+    });
+
     this.udp.on('message', (msg, rinfo) => {
       this.onMessage(msg, rinfo);
     });
-    this.udp.on('error', () => {});
+
+    this.udp.on('error', err => {
+      console.log(err.stack);
+    });
+    
     setInterval(() => this.joinDHTNetwork(), 1000);
     setInterval(() => this.makeNeighbours(), 1000);
   }
