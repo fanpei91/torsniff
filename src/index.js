@@ -1,5 +1,6 @@
+'use strict';
 
-import DHTSpider from './dht';
+import DHTSpider from './dhtspider';
 import BTClient from './btclient';
 
 export default (options = {}, callback) => {
