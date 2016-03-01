@@ -174,8 +174,10 @@ export default class DHTSpider {
       console.log('error', err.stack);
     });
 
-    setInterval(() => this.joinDHTNetwork(), 1000);
-    setInterval(() => this.makeNeighbours(), 1000);
+    setInterval(() => {
+      this.joinDHTNetwork();
+      this.makeNeighbours();
+    }, 1000);
   }
   
   static start(options){
