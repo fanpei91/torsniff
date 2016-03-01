@@ -1,10 +1,10 @@
 ## 介绍
 
-p2pspider 是一个 DHT 爬虫 + BT Client 的结合体, 从全球 DHT 网络里"嗅探"人们正在下载的资源, 并把资源的`metadata`(种子的主要信息)从 远程 BT 客户端下载, 并生成资源磁力链接. 通过磁力链接, 你就可以下载到资源文件.
+p2pspider 是一个 DHT 爬虫 + BT 客户端的结合体, 从全球 DHT 网络里"嗅探"人们正在下载的资源, 并把资源的`metadata`(种子的主要信息)从远程 BT 客户端下载, 并生成资源磁力链接. 通过磁力链接, 你就可以下载到资源文件.
 
 ## 用途
 
-你可以使用 p2pspider 打造私人种子库, 也拿它做资源数据挖掘与分析。
+你可以使用 p2pspider 打造私人种子库, 也可拿它做资源数据挖掘与分析。
 
 ## 安装
 
@@ -21,7 +21,7 @@ p2pspider(function(data){
 })
 ```
 
-建议放在公网上执行，最好是国外的 VPS。
+建议放在有公网 IP 的主机上执行。
 
 ## 待做
 
@@ -40,7 +40,7 @@ p2pspider(function(data){
 
 fork 并拉取代码后，执行 `npm install` 安装依赖（安装的依赖较多，请耐心等待）.
 
-现在的代码使用 `ES6` 编译，然后使用 Babel 编译。执行 `npm run watch` 持续编译，这样代码修改后就会自动编译。
+现在的代码使用 `ES6` 编写，然后使用 Babel 编译。执行 `npm run watch` 持续编译，这样代码修改后就会自动编译。
 
 然后执行 `node test/index.js` 就可以看到运行效果。
 
@@ -52,13 +52,9 @@ fork 并拉取代码后，执行 `npm install` 安装依赖（安装的依赖较
 
 在开发这个项目时, 从 [bittorrent-protocol](https://github.com/feross/bittorrent-protocol) 和  [ut_metadata](https://github.com/feross/ut_metadata) 借鉴了一些实现代码. 非常感谢其作者 [@feross](https://github.com/feross) 指点迷津.
 
-## 交流
-
-如果你对此项目感兴趣, 不管你是不是开发者, 都可加 QQ 群(145234507)进行实时交流. 虽然 QQ 群看起来很 Low, 但不得不说, 特别适合快速交流.
-
 ## 提醒
 
-不要拿这个爬虫爬取的数据分享到互联网, 因为很多敏感资源; 你懂滴资源; 侵权资源. 否则后果自负喔.
+不要拿这个爬虫爬取的数据分享到互联网, 因为很多敏感资源; 色情资源; 侵权资源. 否则后果自负喔.
 
 ## 许可证
 
