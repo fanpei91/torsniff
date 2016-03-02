@@ -16,6 +16,7 @@ npm install p2pspider
 ```
 
 ## 使用
+使用前, 请确保你的 `node` 版本 `>=0.12.0`.
 
 ```js
 'use strict';
@@ -84,6 +85,8 @@ npm install p2pspider
 ```
 
 ##Usage
+
+Before using this, please ensure your `node` version `>=0.12.0`.
 
 ```js
 'use strict';
