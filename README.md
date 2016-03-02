@@ -112,32 +112,32 @@ Before using this, please ensure your `node` version `>=0.12.0`.
 var p2pspider = require('../lib/index');
 p2pspider(
     {
-        // DHT 监听地址
+        // DHT listening address
         address: '0.0.0.0',
         
-        // DHT 监听端口
+        // DHT listening port
         port: 6881,
         
-        // 每秒发送find_node请求数. 在资源允许的情况下, 数字越大, 爬虫速度越快.
+        // find_node requests be sent per second. If allowed, higher value it is, faster speed it will be.
         nodesMaxSize: 2000,
         
-        // 最大 BT Client 连接数.
-        // 在资源允许的情况下, 数字越大, 爬取速度越快, 但是也危险.
-        // 请不要超过系统最大 TCP 连接数. 否则可能会出现系统过载而宕机.
+        // Maximum BT Client connections.
+        // If allowed, higher value it is, faster speed will be.
+        // Do not exceed the system maximum TCP connection number, otherwise it may crash due to overload.
         maxConnections: 2000,
         
-        // BT Client TCP 超时时间.
+        // BT Client TCP timeout.
         timeout: 5000,
         
-        // 如果你存储了infohash到数据库, 那么请根据此infohash查询是否存在, 如果存在了, 爬虫将不会重复爬取.
-        // callback 接受bool值. 为 true 时, 不爬取. 为 false, 要爬取.
+        // If you store infohash to the database, you can use this to check infohash is exist or not.
+        // callback gets bool value. When true, crawler don't crawl. When false, crawler crawls.
         filter: function(infohash, callback) {
             var existsInDatabase = false;
             callback(existsInDatabase);
         }
     },
     
-    // 你可以把你感兴趣的数据保存到数据库, 文件, 或者远程服务. 建议把 metadata.infohash 也保存, 方便过滤重复的数据.
+    // You can store the data you interested to the database, or a file, even remote services. Suggest to save metadata.infohash in order to filts duplicate data.
     function(metadata) {
         console.log(metadata);
     }
@@ -170,7 +170,7 @@ After forking the code, use ```npm install``` to install required packages. Run 
 When I was developing this project, I references some code from [bittorrent-protocol](https://github.com/feross/bittorrent-protocol) and  [ut_metadata](https://github.com/feross/ut_metadata), thanks to their author,  [@feross](https://github.com/feross)'s pointing.
 
 ##Notice
-Please don't share the data p2pspider crawled to the internet. Because sometimes it crawls sensitive/copyright/porn data.
+Please don't share the data p2pspider crawled to the internet. Because sometimes it crawls sensitive/copyrighted/porn data.
 
 ##License
 MIT
