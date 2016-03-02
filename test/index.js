@@ -31,7 +31,6 @@ p2pspider(
     
     // 你可以把你感兴趣的数据保存到数据库, 文件, 或者远程服务.
     function(metadata) {
-        console.log((metadata.info.name || metadata.info['name.utf-8'] || new Buffer('')).toString());
-        //console.log(metadata);
+        console.log(metadata);
     }
 );
