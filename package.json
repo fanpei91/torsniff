@@ -1,7 +1,7 @@
 {
   "name": "p2pspider",
   "description": "DHT Spider + BitTorrent Client = P2P Spider",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": {
     "name": "Fuck-You-GFW"
   },
@@ -10,12 +10,10 @@
   "bugs": {
     "url": "https://github.com/Fuck-You-GFW/p2pspider/issues"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {
     "bencode": "^0.7.0",
-    "bitfield": "^1.1.2",
-    "lru": "^2.0.0"
+    "bitfield": "^1.1.2"
   },
   "keywords": [
     "torrent",
