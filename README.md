@@ -29,7 +29,7 @@ p2pspider(
         timeout: 5000
     },
     
-    // You can store what you want into database, file or remote service.
+    // 你可以把你感兴趣的数据保存到数据库, 文件, 或者远程服务.
     function(metadata) {
         console.log(metadata);
     }
