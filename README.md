@@ -12,7 +12,7 @@ p2pspider 是一个 DHT 爬虫 + BT 客户端的结合体, 从全球 DHT 网络�
 ## 安装
 
 ```
-npm install p2pspider
+git clone https://github.com/Fuck-You-GFW/p2pspider
 ```
 
 ## 使用
@@ -23,10 +23,29 @@ npm install p2pspider
 var p2pspider = require('../lib/index');
 p2pspider(
     {
+        // DHT 监听地址
         address: '0.0.0.0',
+        
+        // DHT 监听端口
         port: 6881,
-        nodesMaxSize: 4000, //数字越大 ,系统资源消耗越高, 爬取速度可能也越慢.
-        timeout: 5000
+        
+        // 每秒发送find_node请求数. 在资源允许的情况下, 数字越大, 爬取速度越快.
+        nodesMaxSize: 2000,
+        
+        // 最大 BT Client 连接数.
+        // 在资源允许的情况下, 数字越大, 爬取速度越快, 但是也危险.
+        // 请不要超过系统最大 TCP 连接数. 否则可能会出现系统过载而宕机.
+        maxConnections: 2000,
+        
+        // BT Client TCP 超时时间.
+        timeout: 5000,
+        
+        // 如果你存储了infohash到数据库, 那么请根据此infohash查询是否存在, 如果存在了, 爬虫将不会重复爬取.
+        // callback 接受bool值. 为 true 时, 不爬取. 为 false, 要爬取.
+        filter: function(infohash, callback) {
+            var existsInDatabase = false;
+            callback(existsInDatabase);
+        }
     },
     
     // 你可以把你感兴趣的数据保存到数据库, 文件, 或者远程服务.
@@ -81,7 +100,7 @@ You can also use p2pspider to build your own torrents database for data mining a
 
 ##Install
 ```
-npm install p2pspider
+git clone https://github.com/Fuck-You-GFW/p2pspider
 ```
 
 ##Usage
@@ -93,13 +112,32 @@ Before using this, please ensure your `node` version `>=0.12.0`.
 var p2pspider = require('../lib/index');
 p2pspider(
     {
+        // DHT 监听地址
         address: '0.0.0.0',
+        
+        // DHT 监听端口
         port: 6881,
-        nodesMaxSize: 4000,
-        timeout: 5000
+        
+        // 每秒发送find_node请求数. 在资源允许的情况下, 数字越大, 爬虫速度越快.
+        nodesMaxSize: 2000,
+        
+        // 最大 BT Client 连接数.
+        // 在资源允许的情况下, 数字越大, 爬取速度越快, 但是也危险.
+        // 请不要超过系统最大 TCP 连接数. 否则可能会出现系统过载而宕机.
+        maxConnections: 2000,
+        
+        // BT Client TCP 超时时间.
+        timeout: 5000,
+        
+        // 如果你存储了infohash到数据库, 那么请根据此infohash查询是否存在, 如果存在了, 爬虫将不会重复爬取.
+        // callback 接受bool值. 为 true 时, 不爬取. 为 false, 要爬取.
+        filter: function(infohash, callback) {
+            var existsInDatabase = false;
+            callback(existsInDatabase);
+        }
     },
     
-    // You can store what you want into database, file or remote service.
+    // 你可以把你感兴趣的数据保存到数据库, 文件, 或者远程服务. 建议把 metadata.infohash 也保存, 方便过滤重复的数据.
     function(metadata) {
         console.log(metadata);
     }
