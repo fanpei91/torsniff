@@ -1,9 +1,0 @@
-node_modules/
-sftp-config.json
-diff
-log
-npm-debug.log
-test/App/Runtime/Cache/
-coverage
-.sync-config.cson
-.DS_Store
