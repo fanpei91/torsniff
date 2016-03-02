@@ -5,7 +5,5 @@ log
 npm-debug.log
 test/App/Runtime/Cache/
 coverage
-lib/
-demo/
 .sync-config.cson
 .DS_Store

@@ -5,32 +5,17 @@
   "author": {
     "name": "Fuck-You-GFW"
   },
+  "repository": "https://github.com/Fuck-You-GFW/p2pspider",
   "main": "lib/index.js",
   "bugs": {
     "url": "https://github.com/Fuck-You-GFW/p2pspider/issues"
   },
   "scripts": {
-    "test": "npm run eslint",
-    "compile": "babel --presets es2015-loose,stage-1 src/ --out-dir lib/",
-    "watch-compile": "npm run compile -- --watch",
-    "watch": "npm run watch-compile",
-    "prepublish": "npm run compile",
-    "eslint": "eslint src/"
   },
   "dependencies": {
     "bencode": "^0.7.0",
     "bitfield": "^1.1.2",
-    "iconv-lite": "^0.4.13",
-    "is-utf8": "^0.2.1",
     "lru": "^2.0.0"
-  },
-  "devDependencies": {
-    "babel-cli": "6.3.17",
-    "babel-preset-es2015-loose": "6.1.4",
-    "babel-preset-stage-1": "6.3.13",
-    "eslint": "^1.10.3",
-    "babel-eslint": "4.1.8",
-    "babel-core": "6.x.x"
   },
   "keywords": [
     "torrent",

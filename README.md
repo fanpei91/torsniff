@@ -18,10 +18,21 @@ npm install p2pspider
 ## 使用
 
 ```js
-var p2pspider = require('p2pspider');
-p2pspider(function(data){
-    console.log(data); //获取到的信息
-})
+'use strict';
+var p2pspider = require('../lib/index');
+p2pspider(
+    {
+        address: '0.0.0.0',
+        port: 6881,
+        nodesMaxSize: 4000, //数字越大 ,系统资源消耗越高, 爬取速度可能也越慢.
+        timeout: 5000
+    },
+    
+    // You can store what you want into database, file or remote service.
+    function(metadata) {
+        console.log(metadata);
+    }
+);
 ```
 
 建议放在有公网 IP 的主机上执行。
@@ -41,11 +52,7 @@ p2pspider(function(data){
 
 ## 贡献代码
 
-fork 并拉取代码后，执行 `npm install` 安装依赖（安装的依赖较多，请耐心等待）.
-
-现在的代码使用 `ES6` 编写，然后使用 Babel 编译。执行 `npm run watch` 持续编译，这样代码修改后就会自动编译。
-
-然后执行 `node test/index.js` 就可以看到运行效果。
+fork 并拉取代码后，执行 `npm install` 安装依赖, 然后执行 `node test/index.js` 就可以看到测试效果。
 
 ## 协议
 
@@ -79,10 +86,21 @@ npm install p2pspider
 ##Usage
 
 ```js
-var p2pspider = require('p2pspider');
-p2pspider(function(data){
-    console.log(data); // Crawled data
-})
+'use strict';
+var p2pspider = require('../lib/index');
+p2pspider(
+    {
+        address: '0.0.0.0',
+        port: 6881,
+        nodesMaxSize: 4000,
+        timeout: 5000
+    },
+    
+    // You can store what you want into database, file or remote service.
+    function(metadata) {
+        console.log(metadata);
+    }
+);
 ```
 
 *We highly recommend to run p2pspider on a host which has dedicated public IP.*
@@ -102,13 +120,7 @@ p2pspider(function(data){
 * Build an another QVod platform is possible.
 
 ##Contribute
-After forking the code, use ```npm install``` to install required packages.
-
-Code wrote with ```ES6```, and used Babel to compile.
-
-Use ```npm run watch``` to keep compiling. It will compile automatically when code edited.
-
-Run ```node test/index.js``` to review results.
+After forking the code, use ```npm install``` to install required packages. Run ```node test/index.js``` to review results.
 
 ##Protocols
 [bep_0005](http://www.bittorrent.org/beps/bep_0005.html), [bep_0003](http://www.bittorrent.org/beps/bep_0003.html), [bep_0010](http://www.bittorrent.org/beps/bep_0010.html), [bep_0009](http://www.bittorrent.org/beps/bep_0009.html)
