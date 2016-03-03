@@ -1,7 +1,7 @@
 {
   "name": "p2pspider",
   "description": "DHT Spider + BitTorrent Client = P2P Spider",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": {
     "name": "Fuck-You-GFW"
   },
