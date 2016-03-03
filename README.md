@@ -138,7 +138,7 @@ After forking the code, use ```npm install``` to install required packages. Run 
 When I was developing this project, I references some code from [bittorrent-protocol](https://github.com/feross/bittorrent-protocol) and  [ut_metadata](https://github.com/feross/ut_metadata), thanks to their author,  [@feross](https://github.com/feross)'s pointing.
 
 ##Notice
-Please don't share the data p2pspider crawled to the internet. Because sometimes it crawls sensitive/copyright/porn data.
+Please don't share the data p2pspider crawled to the internet. Because sometimes it crawls sensitive/copyrighted/porn data.
 
 ##License
 MIT
