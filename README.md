@@ -7,7 +7,7 @@ p2pspider 是一个 DHT 爬虫 + BT 客户端的结合体, 从全球 DHT 网络�
 
 ## 用途
 
-你可以使用 p2pspider 打造私人种子库, 也可拿它做资源数据挖掘与分析。
+你可以使用 p2pspider 打造私人种子库(比如: 海盗湾), 也可拿它做资源数据挖掘与分析。
 
 ## 安装
 
@@ -80,7 +80,7 @@ p2pspider is a crawler combined with DHT Spider and BitTorrent Client.
 
 It crawls what people is downloading on the worldwide DHT Network, and `metadata` (the core data of a torrent) from remote BitTorrent Clients. p2pspider also generates magnet URLs, you can import the URLs to your local BitTorrent Client in order to download the resources you want.
 
-You can also use p2pspider to build your own torrents database for data mining and analyzing.
+You can also use p2pspider to build your own torrents database(e.g: The Pirate Bay) for data mining and analyzing.
 
 ##Install
 ```
