@@ -39,7 +39,7 @@ p2pspider(
 );
 ```
 
-建议放在有公网 IP 的主机上执行。
+**目前只能放在有公网 IP 的主机上执行, 或者路由器设置端口转发.**
 
 ## 待做
 
@@ -112,7 +112,7 @@ p2pspider(
 );
 ```
 
-*We highly recommend to run p2pspider on a host which has dedicated public IP.*
+**p2pspider only run on a host which has dedicated public IP.**
 
 ##Upcoming features
 * Performance optimization
