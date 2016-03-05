@@ -45,10 +45,10 @@ p2pspider(
 
 >* 效率优化
 >* 数据保存
->* 跨平台 GUI 化
+>* Web GUI 化
 >* 数据共享
 >* 资源下载
->* 视频流媒体播放
+>* 视频播放
 
 ## 目标
 
@@ -117,10 +117,10 @@ p2pspider(
 ##Upcoming features
 * Performance optimization
 * Data storage
-* Cross-platform GUI
+* Web GUI
 * Data sharing
 * Data downloading
-* Video streaming
+* Video playing
 
 ##Goals
 * Make p2pspider be an easy-using tool for you.
