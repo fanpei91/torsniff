@@ -41,18 +41,6 @@ p2pspider(
 
 **目前只能放在有公网 IP 的主机上执行, 或者路由器设置端口转发.**
 
-## 待做
-
->* 效率优化
->* 数据保存
->* Web GUI 化
->* 数据共享
->* 资源下载
->* 视频播放
-
-## 目标
-
-打造成人人都能用的神器, 可以用它搜索种子; 下载资源; 共享数据库; 如果是视频, 可边下载边播放; 打造成分布式快播是可以有滴. :)
 
 ## 贡献代码
 
@@ -114,19 +102,6 @@ p2pspider(
 
 **p2pspider only run on a host which has dedicated public IP.**
 
-##Upcoming features
-* Performance optimization
-* Data storage
-* Web GUI
-* Data sharing
-* Data downloading
-* Video playing
-
-##Goals
-* Make p2pspider be an easy-using tool for you.
-* You can use it to search torrents, to download resources, even to share the database.
-* You can play videos when you're downloading them.
-* Build an another QVod platform is possible.
 
 ##Contribute
 After forking the code, use ```npm install``` to install required packages. Run ```node test/index.js``` to review results.
