@@ -1,20 +1,21 @@
 'use strict';
 
-var p2pspider = require('../lib/index');
+var P2PSpider = require('../lib');
 
-p2pspider(
-    {
-        address: '0.0.0.0',
-        port: 6881,
-        nodesMaxSize: 200,   // be careful
-        maxConnections: 400, // be careful
-        timeout: 5000,
-        filter: function(infohash, callback) {
-            var theInfohashIsExistsInDatabase = false;
-            callback(theInfohashIsExistsInDatabase);
-        }
-    },
-    function(metadata) {
-        console.log(metadata);
-    }
-);
+var p2p = P2PSpider({
+    nodesMaxSize: 200,   // be careful
+    maxConnections: 400, // be careful
+    timeout: 5000
+});
+
+p2p.ignore(function (infohash, rinfo, callback) {
+    // false => always to download the metadata even though the metadata is exists.
+    var theInfohashIsExistsInDatabase = false;
+    callback(theInfohashIsExistsInDatabase);
+});
+
+p2p.on('metadata', function (metadata) {
+    console.log(metadata);
+});
+
+p2p.listen(6881, '0.0.0.0');
