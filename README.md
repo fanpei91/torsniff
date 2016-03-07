@@ -39,6 +39,14 @@ p2pspider(
 );
 ```
 
+或者使用 `Promise` 替代回调函数：
+
+```js
+p2pspider(options).then(function(metadata) {
+    console.log(metadata);
+});
+```
+
 **目前只能放在有公网 IP 的主机上执行, 或者路由器设置端口转发.**
 
 
@@ -98,6 +106,14 @@ p2pspider(
         console.log(metadata);
     }
 );
+```
+
+Or using `Promise` instead of callback functions:
+
+```js
+p2pspider(options).then(function(metadata) {
+    console.log(metadata);
+});
 ```
 
 **p2pspider only run on a host which has dedicated public IP.**
