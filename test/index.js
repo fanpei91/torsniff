@@ -2,7 +2,7 @@
 
 var p2pspider = require('../lib/index');
 
-p2pspider(
+var obj = p2pspider(
     {
         address: '0.0.0.0',
         port: 6881,
@@ -13,8 +13,9 @@ p2pspider(
             var theInfohashIsExistsInDatabase = false;
             callback(theInfohashIsExistsInDatabase);
         }
-    },
-    function(metadata) {
-        console.log(metadata);
     }
 );
+obj.start();
+obj.on('data', function (data) {
+  console.log(data);
+});
