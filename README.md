@@ -20,23 +20,26 @@ git clone https://github.com/Fuck-You-GFW/p2pspider
 
 ```js
 'use strict';
-var p2pspider = require('../lib/index');
-p2pspider(
-    {
-        address: '0.0.0.0',
-        port: 6881,
-        nodesMaxSize: 200,   // be careful
-        maxConnections: 400, // be careful
-        timeout: 5000,
-        filter: function(infohash, callback) {
-            var theInfohashIsExistsInDatabase = false; // false => always to download the metadata even though the metadata is exists.
-            callback(theInfohashIsExistsInDatabase);
-        }
-    },
-    function(metadata) {
-        console.log(metadata);
-    }
-);
+
+var P2PSpider = require('../lib');
+
+var p2p = P2PSpider({
+    nodesMaxSize: 200,   // be careful
+    maxConnections: 400, // be careful
+    timeout: 5000
+});
+
+p2p.ignore(function (infohash, rinfo, callback) {
+    // false => always to download the metadata even though the metadata is exists.
+    var theInfohashIsExistsInDatabase = false;
+    callback(theInfohashIsExistsInDatabase);
+});
+
+p2p.on('metadata', function (metadata) {
+    console.log(metadata);
+});
+
+p2p.listen(6881, '0.0.0.0');
 ```
 
 **目前只能放在有公网 IP 的主机上执行, 或者路由器设置端口转发.**
@@ -81,23 +84,26 @@ Before using this, please ensure your `node` version `>=0.12.0`.
 
 ```js
 'use strict';
-var p2pspider = require('../lib/index');
-p2pspider(
-    {
-        address: '0.0.0.0',
-        port: 6881,
-        nodesMaxSize: 200,   // be careful
-        maxConnections: 400, // be careful
-        timeout: 5000,
-        filter: function(infohash, callback) {
-            var theInfohashIsExistsInDatabase = false; // false => always to download the metadata even though the metadata is exists.
-            callback(theInfohashIsExistsInDatabase);
-        }
-    },
-    function(metadata) {
-        console.log(metadata);
-    }
-);
+
+var P2PSpider = require('../lib');
+
+var p2p = P2PSpider({
+    nodesMaxSize: 200,   // be careful
+    maxConnections: 400, // be careful
+    timeout: 5000
+});
+
+p2p.ignore(function (infohash, rinfo, callback) {
+    // false => always to download the metadata even though the metadata is exists.
+    var theInfohashIsExistsInDatabase = false;
+    callback(theInfohashIsExistsInDatabase);
+});
+
+p2p.on('metadata', function (metadata) {
+    console.log(metadata);
+});
+
+p2p.listen(6881, '0.0.0.0');
 ```
 
 **p2pspider only run on a host which has dedicated public IP.**
