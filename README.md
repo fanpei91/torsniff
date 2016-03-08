@@ -36,6 +36,7 @@ p2p.ignore(function (infohash, rinfo, callback) {
 });
 
 p2p.on('metadata', function (metadata) {
+    // At here, you can extract data and save into database.
     console.log(metadata);
 });
 
@@ -100,6 +101,7 @@ p2p.ignore(function (infohash, rinfo, callback) {
 });
 
 p2p.on('metadata', function (metadata) {
+    // At here, you can extract data and save into database.
     console.log(metadata);
 });
 
