@@ -22,7 +22,7 @@ var p2p = P2PSpider({
 });
 
 p2p.ignore(function (infohash, rinfo, callback) {
-    client.exists({ index: 'bt', type: 'meta', id: infohash }, function (error, exists) {
+    client.exists({ index: 'seeds', type: 'meta', id: infohash }, function (error, exists) {
         callback(exists);
     });
 });
@@ -32,7 +32,7 @@ p2p.on('metadata', function (metadata) {
     data.magnet = metadata.magnet;
     data.name = metadata.info.name ? metadata.info.name.toString() : '';
     data.fetchedAt = new Date().getTime();
-    client.index({ index: 'bt', type: 'meta', id: metadata.infohash, body: data }, function (error, resp) {
+    client.index({ index: 'seeds', type: 'meta', id: metadata.infohash, body: data }, function (error, resp) {
         if(!error) {
             console.log(data.name);
         }
