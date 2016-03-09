@@ -1,6 +1,15 @@
 'use strict';
 
-var P2PSpider = require('./lib');
+/**
+ * Sample of using elastic search to store and index fetched p2p data.
+ * Usage:
+ *  1. npm install elasticsearch --save
+ *  2. docker run --name elasticsearch -d -p 9200:9200 -p 9300:9300 elasticsearch
+ *
+ * The ElasticUI can be used as a simple frontend UI.
+ */
+
+var P2PSpider = require('../lib');
 var elasticsearch = require('elasticsearch');
 
 var client = new elasticsearch.Client({'host': 'localhost:9200'});
