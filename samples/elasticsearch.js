@@ -13,28 +13,34 @@
 var P2PSpider = require('../lib');
 var elasticsearch = require('elasticsearch');
 
-var client = new elasticsearch.Client({host: 'localhost:9200'});
+var client = new elasticsearch.Client({ host: 'localhost:9200' });
 
 var p2p = P2PSpider({
     nodesMaxSize: 200,
-    maxConnections: 400,
-    timeout: 5000
+    maxConnections: 100,
+    maxItemsInQueue: 1000,
+    timeout: 5000,
+    requestInterval: 50
 });
 
-p2p.ignore(function (infohash, rinfo, callback) {
-    client.exists({ index: 'seeds', type: 'meta', id: infohash }, function (error, exists) {
+p2p.ignore(function(infohash, rinfo, callback) {
+    client.exists({ index: 'seeds', type: 'meta', id: infohash }, function(error, exists) {
         callback(exists);
     });
 });
 
-p2p.on('metadata', function (metadata) {
+p2p.on('metadata', function(metadata) {
     var data = {};
     data.magnet = metadata.magnet;
     data.name = metadata.info.name ? metadata.info.name.toString() : '';
     data.fetchedAt = new Date().getTime();
-    client.index({ index: 'seeds', type: 'meta', id: metadata.infohash, body: data }, function (error, resp) {
-        if(!error) {
-            console.log(data.name);
+    client.exists({ index: 'seeds', type: 'meta', id: metadata.infohash }, function(error, exists) {
+        if (!exists) {
+            client.index({ index: 'seeds', type: 'meta', id: metadata.infohash, body: data }, function(error, resp) {
+                if (!error) {
+                    console.log(data.name);
+                }
+            });
         }
     });
 });
