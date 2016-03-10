@@ -34,13 +34,9 @@ p2p.on('metadata', function(metadata) {
     data.magnet = metadata.magnet;
     data.name = metadata.info.name ? metadata.info.name.toString() : '';
     data.fetchedAt = new Date().getTime();
-    client.exists({ index: 'seeds', type: 'meta', id: metadata.infohash }, function(error, exists) {
-        if (!exists) {
-            client.index({ index: 'seeds', type: 'meta', id: metadata.infohash, body: data }, function(error, resp) {
-                if (!error) {
-                    console.log(data.name);
-                }
-            });
+    client.index({ index: 'seeds', type: 'meta', id: metadata.infohash, body: data }, function(error, resp) {
+        if (!error) {
+            console.log(data.name);
         }
     });
 });
