@@ -10,7 +10,7 @@
 var P2PSpider = require('../lib');
 var level = require('level');
 
-var db = level('./leveldb')
+var db = level('./leveldb');
 
 var p2p = P2PSpider({
     nodesMaxSize: 200,
@@ -20,7 +20,7 @@ var p2p = P2PSpider({
 
 p2p.ignore(function (infohash, rinfo, callback) {
     db.get('name', function (err, value) {
-        callback(!err);
+        callback(!!err);
     });
 });
 
@@ -29,7 +29,7 @@ p2p.on('metadata', function (metadata) {
     data.magnet = metadata.magnet;
     data.name = metadata.info.name ? metadata.info.name.toString() : '';
     data.fetchedAt = new Date().getTime();
-    db.put(metadata.infohash, JSON.stringify(data), function (err) { 
+    db.put(metadata.infohash, JSON.stringify(data), function (err) {
         if(!err) {
             console.log(data.name);
         }
