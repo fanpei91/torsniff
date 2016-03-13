@@ -48,7 +48,7 @@ p2p.listen(6881, '0.0.0.0');
 
 ## 贡献代码
 
-fork 并拉取代码后，执行 `npm install` 安装依赖, 然后执行 `node test/index.js` 就可以看到测试效果。
+fork 并拉取代码后，执行 `npm install` 安装依赖, 然后执行 `node test/index.js` 就可以看到测试效果。如要提交代码, 请提交到 `dev` 分支, 如果代码没问题的话, 我会合并到 `master` 分支.
 
 ## 协议
 
@@ -70,7 +70,7 @@ MIT
 ##Introduction
 p2pspider is a crawler combined with DHT Spider and BitTorrent Client.
 
-It crawls what people is downloading on the worldwide DHT Network, and `metadata` (the core data of a torrent) from remote BitTorrent Clients. p2pspider also generates magnet URLs, you can import the URLs to your local BitTorrent Client in order to download the resources you want.
+It crawls what people are downloading on the worldwide DHT Network, and `metadata` (the core data of a torrent) from remote BitTorrent Clients. p2pspider also generates magnet URLs, you can import the URLs to your local BitTorrent Client in order to download the resources you want.
 
 You can also use p2pspider to build your own torrents database(e.g: The Pirate Bay) for data mining and analyzing.
 
@@ -95,30 +95,30 @@ var p2p = P2PSpider({
 });
 
 p2p.ignore(function (infohash, rinfo, callback) {
-    // false => always to download the metadata even though the metadata is exists.
+    // false => always download the metadata even though the metadata exists.
     var theInfohashIsExistsInDatabase = false;
     callback(theInfohashIsExistsInDatabase);
 });
 
 p2p.on('metadata', function (metadata) {
-    // At here, you can extract data and save into database.
+    // At this point, you can extract data and save into database.
     console.log(metadata);
 });
 
 p2p.listen(6881, '0.0.0.0');
 ```
 
-**p2pspider only run on a host which has dedicated public IP.**
+**p2pspider only runs on a host which has dedicated public IP.**
 
 
 ##Contribute
-After forking the code, use ```npm install``` to install required packages. Run ```node test/index.js``` to review results.
+After forking the code, use ```npm install``` to install required packages. Run ```node test/index.js``` to review results. If you want to contribute code to p2pspider, please commit to `dev` branch, and I will merge it to `master` branch if it is ok.
 
 ##Protocols
 [bep_0005](http://www.bittorrent.org/beps/bep_0005.html), [bep_0003](http://www.bittorrent.org/beps/bep_0003.html), [bep_0010](http://www.bittorrent.org/beps/bep_0010.html), [bep_0009](http://www.bittorrent.org/beps/bep_0009.html)
 
 ##Thanks
-When I was developing this project, I references some code from [bittorrent-protocol](https://github.com/feross/bittorrent-protocol) and  [ut_metadata](https://github.com/feross/ut_metadata), thanks to their author,  [@feross](https://github.com/feross)'s pointing.
+When I was developing this project, I referenced some code from [bittorrent-protocol](https://github.com/feross/bittorrent-protocol) and  [ut_metadata](https://github.com/feross/ut_metadata), thanks to their author,  [@feross](https://github.com/feross)'s pointing.
 
 ##Notice
 Please don't share the data p2pspider crawled to the internet. Because sometimes it crawls sensitive/copyrighted/porn data.
