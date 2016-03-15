@@ -14,23 +14,24 @@ var db = level('./leveldb');
 
 var p2p = P2PSpider({
     nodesMaxSize: 200,
-    maxConnections: 400,
+    maxConnections: 100,
     timeout: 5000
+
 });
 
-p2p.ignore(function (infohash, rinfo, callback) {
-    db.get(infohash, function (err, value) {
-        callback(!!err);
+p2p.ignore(function(infohash, rinfo, callback) {
+    db.get(infohash, function(err, value) {
+        callback(!err);
     });
 });
 
-p2p.on('metadata', function (metadata) {
+p2p.on('metadata', function(metadata) {
     var data = {};
     data.magnet = metadata.magnet;
     data.name = metadata.info.name ? metadata.info.name.toString() : '';
     data.fetchedAt = new Date().getTime();
-    db.put(metadata.infohash, JSON.stringify(data), function (err) {
-        if(!err) {
+    db.put(metadata.infohash, JSON.stringify(data), function(err) {
+        if (!err) {
             console.log(data.name);
         }
     });
