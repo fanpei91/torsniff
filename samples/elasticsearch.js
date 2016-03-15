@@ -17,7 +17,7 @@ var client = new elasticsearch.Client({ host: 'localhost:9200' });
 
 var p2p = P2PSpider({
     nodesMaxSize: 200,
-    maxConnections: 20,
+    maxConnections: 100,
     timeout: 5000
 });
 

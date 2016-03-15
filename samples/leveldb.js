@@ -14,15 +14,14 @@ var db = level('./leveldb');
 
 var p2p = P2PSpider({
     nodesMaxSize: 200,
-    maxConnections: 40,
+    maxConnections: 100,
     timeout: 5000
 
 });
 
 p2p.ignore(function(infohash, rinfo, callback) {
-    console.log(infohash);
     db.get(infohash, function(err, value) {
-        callback(!!err);
+        callback(!err);
     });
 });
 
