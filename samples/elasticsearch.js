@@ -18,12 +18,13 @@ var client = new elasticsearch.Client({ host: 'localhost:9200' });
 var p2p = P2PSpider({
     nodesMaxSize: 200,
     maxConnections: 20,
-    timeout: 5000,
-    ignore: function(infohash, rinfo, callback) {
-        client.exists({ index: 'seeds', type: 'meta', id: infohash }, function(error, exists) {
-            callback(exists);
-        });
-    }
+    timeout: 5000
+});
+
+p2p.ignore(function(infohash, rinfo, callback) {
+    client.exists({ index: 'seeds', type: 'meta', id: infohash }, function(error, exists) {
+        callback(exists);
+    });
 });
 
 p2p.on('metadata', function(metadata) {
