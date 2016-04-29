@@ -48,7 +48,7 @@ p2p.listen(6881, '0.0.0.0');
 
 ## 贡献代码
 
-fork 并拉取代码后，执行 `npm install` 安装依赖, 然后执行 `node test/index.js` 就可以看到测试效果。如要提交代码, 请提交到 `dev` 分支, 如果代码没问题的话, 我会合并到 `master` 分支.
+fork 并拉取代码后，执行 `npm install` 安装依赖, 然后执行 `node test/index.js` 就可以看到测试效果。
 
 ## 协议
 
@@ -112,7 +112,7 @@ p2p.listen(6881, '0.0.0.0');
 
 
 ##Contribute
-After forking the code, use ```npm install``` to install required packages. Run ```node test/index.js``` to review results. If you want to contribute code to p2pspider, please commit to `dev` branch, and I will merge it to `master` branch if it is ok.
+After forking the code, use ```npm install``` to install required packages. Run ```node test/index.js``` to review results.
 
 ##Protocols
 [bep_0005](http://www.bittorrent.org/beps/bep_0005.html), [bep_0003](http://www.bittorrent.org/beps/bep_0003.html), [bep_0010](http://www.bittorrent.org/beps/bep_0010.html), [bep_0009](http://www.bittorrent.org/beps/bep_0009.html)
