@@ -108,7 +108,7 @@ p2p.on('metadata', function (metadata) {
 p2p.listen(6881, '0.0.0.0');
 ```
 
-**p2pspider only runs on a host which has dedicated public IP. If you want to use VPS to run it, I highly recommend you to use (Vultr VPS)[http://www.vultr.com/?ref=6859233].**
+**p2pspider only runs on a host which has dedicated public IP. If you want to use VPS to run it, I highly recommend you to use [Vultr VPS](http://www.vultr.com/?ref=6859233).**
 
 
 ##Contribute
