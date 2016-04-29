@@ -43,7 +43,7 @@ p2p.on('metadata', function (metadata) {
 p2p.listen(6881, '0.0.0.0');
 ```
 
-**目前只能放在有公网 IP 的主机上执行, 或者路由器设置端口转发(默认`6881`, `UDP`协议).**
+**目前只能放在有公网 IP 的主机上执行, 或者路由器设置端口转发(默认`6881`, `UDP`协议). 如用 VPS, 我强烈建议使用(Vultr VPS)[http://www.vultr.com/?ref=6859233]**, 这家 VPS 不像别家的 VPS, CPU, 带宽稍微高点, 就要封你 VPS.
 
 
 ## 贡献代码
@@ -108,7 +108,7 @@ p2p.on('metadata', function (metadata) {
 p2p.listen(6881, '0.0.0.0');
 ```
 
-**p2pspider only runs on a host which has dedicated public IP.**
+**p2pspider only runs on a host which has dedicated public IP. If you want to use VPS to run it, I highly recommend you to use (Vultr VPS)[http://www.vultr.com/?ref=6859233].**
 
 
 ##Contribute
