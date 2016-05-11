@@ -20,7 +20,8 @@ var p2p = P2PSpider({
 
 p2p.ignore(function (infohash, rinfo, callback) {
     db.get(infohash, function (err, value) {
-        callback(!!err);
+        var notExist = !!err;  // when info not exist, there is an error.
+        callback(!notExist);
     });
 });
 
