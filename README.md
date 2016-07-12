@@ -43,10 +43,6 @@ p2p.on('metadata', function (metadata) {
 p2p.listen(6881, '0.0.0.0');
 ```
 
-**目前只能放在有公网 IP 的主机上执行, 或者路由器设置端口转发(默认`6881`, `UDP`协议). 如用 VPS, 强烈建议使用 [Vultr VPS](http://www.vultr.com/?ref=6859233), 这家 VPS 不像别家的 VPS, CPU, 带宽稍微高点, 就要封你 VPS.**
-
-**因不明原因, p2pspider 现目前只有在 ubuntu 上有很好的效果, 在 centos 几乎是残废的, 所以简单粗暴点, 直接用 ubuntu 吧.**
-
 ## 贡献代码
 
 fork 并拉取代码后，执行 `npm install` 安装依赖, 然后执行 `node test/index.js` 就可以看到测试效果。
@@ -108,10 +104,6 @@ p2p.on('metadata', function (metadata) {
 
 p2p.listen(6881, '0.0.0.0');
 ```
-
-**p2pspider only runs on a host which has dedicated public IP. If you want to use VPS to run it, I highly recommend you to use [Vultr VPS](http://www.vultr.com/?ref=6859233).**
-
-**There are some inexplicable issues if you are runing on centos. You'd better run p2pspider on ubuntu.**
 
 ##Contribute
 After forking the code, use ```npm install``` to install required packages. Run ```node test/index.js``` to review results.
