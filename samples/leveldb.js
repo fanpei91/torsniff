@@ -20,7 +20,8 @@ var p2p = P2PSpider({
 
 p2p.ignore(function (infohash, rinfo, callback) {
     db.get(infohash, function (err, value) {
-        callback(!!err);
+        var drop = !!err;
+        callback(!drop);
     });
 });
 
