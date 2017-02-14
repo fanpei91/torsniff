@@ -13,7 +13,9 @@
   "scripts": {},
   "dependencies": {
     "bencode": "^0.7.0",
-    "bitfield": "^1.1.2"
+    "bitfield": "^1.1.2",
+    "mysql": "^2.13.0",
+    "redis": "^2.6.5"
   },
   "keywords": [
     "torrent",
