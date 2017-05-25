@@ -12,9 +12,10 @@ var p2p = P2PSpider({
 });
 
 p2p.ignore(function (infohash, rinfo, callback) {
-    // false => always to download the metadata even though the metadata is exists.
-    var theInfohashIsExistsInDatabase = false;
-    callback(theInfohashIsExistsInDatabase);
+    var torrentFilePathSaveTo = path.join(__dirname, "torrents", `${infohash}.torrent`);
+    fs.exists(torrentFilePathSaveTo, function(exists) {
+        callback(exists); //if is not exists, download the metadata.
+    });
 });
 
 p2p.on('metadata', function (metadata) {
