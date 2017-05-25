@@ -1,0 +1,30 @@
+'use strict';
+var fs = require('fs');
+var path = require('path');
+
+var bencode = require('bencode');
+var P2PSpider = require('./lib');
+
+var p2p = P2PSpider({
+    nodesMaxSize: 400,
+    maxConnections: 800,
+    timeout: 10000
+});
+
+p2p.ignore(function (infohash, rinfo, callback) {
+    // false => always to download the metadata even though the metadata is exists.
+    var theInfohashIsExistsInDatabase = false;
+    callback(theInfohashIsExistsInDatabase);
+});
+
+p2p.on('metadata', function (metadata) {
+    var torrentFilePathSaveTo = path.join(__dirname, "torrents", `${metadata.infohash}.torrent`);
+    fs.writeFile(torrentFilePathSaveTo, bencode.encode({'info': metadata.info}), function(err) {
+        if (err) {
+            return console.error(err);
+        }
+        console.log(`${metadata.infohash}.torrent has saved.`)
+    });
+});
+
+p2p.listen(6881, '0.0.0.0');
