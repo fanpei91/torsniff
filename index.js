@@ -12,19 +12,19 @@ var p2p = P2PSpider({
 });
 
 p2p.ignore(function (infohash, rinfo, callback) {
-    var torrentFilePathSaveTo = path.join(__dirname, "torrents", `${infohash}.torrent`);
+    var torrentFilePathSaveTo = path.join(__dirname, "torrents", infohash + ".torrent");
     fs.exists(torrentFilePathSaveTo, function(exists) {
         callback(exists); //if is not exists, download the metadata.
     });
 });
 
 p2p.on('metadata', function (metadata) {
-    var torrentFilePathSaveTo = path.join(__dirname, "torrents", `${metadata.infohash}.torrent`);
+    var torrentFilePathSaveTo = path.join(__dirname, "torrents", metadata.infohash + ".torrent");
     fs.writeFile(torrentFilePathSaveTo, bencode.encode({'info': metadata.info}), function(err) {
         if (err) {
             return console.error(err);
         }
-        console.log(`${metadata.infohash}.torrent has saved.`)
+        console.log(metadata.infohash + ".torrent has saved.");
     });
 });
 
