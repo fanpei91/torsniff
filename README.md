@@ -9,43 +9,10 @@ p2pspider 是一个 DHT 爬虫 + BT 客户端的结合体, 从全球 DHT 网络�
 
 你可以使用 p2pspider 打造私人种子库(比如: 海盗湾), 也可拿它做资源数据挖掘与分析。
 
-## 安装
-
-```
-git clone https://github.com/fanpei91/p2pspider
-```
 
 ## 使用
-使用前, 请确保你的 `node` 版本 `>=0.12.0`.
+使用前, 请确保你的 `node` 版本 `>=0.12.0`, 安装了依赖库( `npm install` ), 然后执行 `node index.js` 运行 p2pspider, 爬到的种子将会存在 `torrents` 目录里。
 
-```js
-'use strict';
-
-var P2PSpider = require('../lib');
-
-var p2p = P2PSpider({
-    nodesMaxSize: 200,   // be careful
-    maxConnections: 400, // be careful
-    timeout: 5000
-});
-
-p2p.ignore(function (infohash, rinfo, callback) {
-    // false => always to download the metadata even though the metadata is exists.
-    var theInfohashIsExistsInDatabase = false;
-    callback(theInfohashIsExistsInDatabase);
-});
-
-p2p.on('metadata', function (metadata) {
-    // At here, you can extract data and save into database.
-    console.log(metadata);
-});
-
-p2p.listen(6881, '0.0.0.0');
-```
-
-## 贡献代码
-
-fork 并拉取代码后，执行 `npm install` 安装依赖, 然后执行 `node test/index.js` 就可以看到测试效果。
 
 ## 协议
 
@@ -71,42 +38,9 @@ It crawls what people are downloading on the worldwide DHT Network, and `metadat
 
 You can also use p2pspider to build your own torrents database(e.g: The Pirate Bay) for data mining and analyzing.
 
-##Install
-```
-git clone https://github.com/fanpei91/p2pspider
-```
-
 ##Usage
 
-Before using this, please ensure your `node` version `>=0.12.0`.
-
-```js
-'use strict';
-
-var P2PSpider = require('../lib');
-
-var p2p = P2PSpider({
-    nodesMaxSize: 200,   // be careful
-    maxConnections: 400, // be careful
-    timeout: 5000
-});
-
-p2p.ignore(function (infohash, rinfo, callback) {
-    // false => always download the metadata even though the metadata exists.
-    var theInfohashIsExistsInDatabase = false;
-    callback(theInfohashIsExistsInDatabase);
-});
-
-p2p.on('metadata', function (metadata) {
-    // At this point, you can extract data and save into database.
-    console.log(metadata);
-});
-
-p2p.listen(6881, '0.0.0.0');
-```
-
-##Contribute
-After forking the code, use ```npm install``` to install required packages. Run ```node test/index.js``` to review results.
+Before using this, please ensure your `node` version `>=0.12.0`, and installed the dependencies(`npm install`).  Execute `node index.js` to run p2pspider, the torrent file will be saved to the `torrents` directory.
 
 ##Protocols
 [bep_0005](http://www.bittorrent.org/beps/bep_0005.html), [bep_0003](http://www.bittorrent.org/beps/bep_0003.html), [bep_0010](http://www.bittorrent.org/beps/bep_0010.html), [bep_0009](http://www.bittorrent.org/beps/bep_0009.html)
