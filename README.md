@@ -11,7 +11,7 @@ p2pspider 是一个 DHT 爬虫 + BT 客户端的结合体, 从全球 DHT 网络�
 
 
 ## 使用
-使用前, 请确保你的 `node` 版本 `>=0.12.0`, 安装了依赖库( `npm install` ), 然后执行 `node index.js` 运行 p2pspider, 爬到的种子将会存在 `torrents` 目录里。
+使用前, 请确保你的 `node` 版本 `>=0.12.0`, 安装了依赖库( `npm install` ), 然后执行 `node index.js` 运行 p2pspider, 爬到的种子将会存在 `torrents` 目录里。强烈建议使用 `pm2` 以 `cluster` 模式启动 p2pspider, 你将会看到什么叫疯狂的 p2pspider, 这将会以每小时几万种子爬取。
 
 
 ## 协议
@@ -40,7 +40,7 @@ You can also use p2pspider to build your own torrents database(e.g: The Pirate B
 
 ## Usage
 
-Before using this, please ensure your `node` version `>=0.12.0`, and installed the dependencies(`npm install`).  Execute `node index.js` to run p2pspider, the torrent file will be saved to the `torrents` directory.
+Before using this, please ensure your `node` version `>=0.12.0`, and installed the dependencies(`npm install`).  Execute `node index.js` to run p2pspider, the torrent file will be saved to the `torrents` directory. I recommend you to use `pm2` running p2pspider in `cluster` mode, you will see what is a CRAZY p2pspider. 
 
 ## Protocols
 [bep_0005](http://www.bittorrent.org/beps/bep_0005.html), [bep_0003](http://www.bittorrent.org/beps/bep_0003.html), [bep_0010](http://www.bittorrent.org/beps/bep_0010.html), [bep_0009](http://www.bittorrent.org/beps/bep_0009.html)
