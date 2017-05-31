@@ -1,4 +1,6 @@
 'use strict';
+
+// This is an example of using p2pspider, you can change the code to make it do something else.
 var fs = require('fs');
 var path = require('path');
 
