@@ -1,18 +1,20 @@
 ## 介绍
 
-p2pspider 是一个 DHT 爬虫 + BT 客户端的结合体, 从全球 DHT 网络里"嗅探"人们正在下载的资源, 并把资源的`metadata`(种子的主要信息)从远程 BT 客户端下载, 并生成资源磁力链接. 通过磁力链接, 你就可以下载到资源文件.
+p2pspider 是一个种子爬虫, 它从全球 P2P 网络下载当前活跃的种子。
 
 [English document](https://github.com/fanpei91/p2pspider#introduction)
 
 
 ## 用途
 
-你可以使用 p2pspider 打造私人种子库(比如: 海盗湾), 也可拿它做资源数据挖掘与分析。
-
+你可以使用 p2pspider 打造私人种子库(比如: 海盗湾), 也可做资源数据挖掘与分析（比如哪一个国家贡献小电影最多）。
 
 ## 使用
-使用前, 请确保你的 `node` 版本 `>=0.12.0`, 安装了依赖库( `npm install` ), 然后执行 `node index.js` 运行 p2pspider, 等一段时间。爬到的种子将会存在 `torrents` 目录里。强烈建议使用 `pm2` 以 `cluster` 模式启动 p2pspider, 你将会看到什么叫疯狂的 p2pspider, 这将会以每小时几万种子爬取。建议在公网运行。 如需要在内网运行，那么需要在路由器设置端口（UDP）`6881` 转发。
+使用前, 请确保你的 `node` 版本 `>=0.12.0`, 安装依赖库( `npm install` ), 然后执行 `node index.js` 运行 p2pspider, 等一段时间。爬到的种子将会存在 `torrents` 目录里。
 
+强烈建议使用 `pm2` 以 `cluster` 模式启动 p2pspider, 你将会看到什么叫疯狂的 p2pspider, 这将会以每小时几万种子爬取。
+
+提示：基本只能在带公网ip的主机上运行。
 
 ## 协议
 
@@ -28,15 +30,18 @@ MIT
 ---
 
 ## Introduction
-p2pspider is a crawler combined with DHT Spider and BitTorrent Client.
+p2pspider is a torrent spider, it crawls torrents that people are using to download resource from the P2P network.
 
-It crawls what people are downloading on the worldwide DHT Network, and `metadata` (the core data of a torrent) from remote BitTorrent Clients. p2pspider also generates magnet URLs, you can import the URLs to your local BitTorrent Client in order to download the resources you want.
-
-You can also use p2pspider to build your own torrents database(e.g: The Pirate Bay) for data mining and analyzing.
+## What you can do with it
+You can use p2pspider to build your own torrent database(e.g: The Pirate Bay), or data mining and analyzing.
 
 ## Usage
 
-Before using this, please ensure your `node` version `>=0.12.0`, and installed the dependencies(`npm install`).  Execute `node index.js` to run p2pspider, wait a frew minutes, the torrent file will be saved to the `torrents` directory. I recommend you to use `pm2` running p2pspider in `cluster` mode, you will see what is a CRAZY p2pspider. I recommend you run p2pspider in public network. If you run in internal network, please set the router udp `6881` port forwarding.
+Ensure your `node` version `>=0.12.0`, install the dependencies(`npm install`), then execute `node index.js` to run p2pspider, wait a frew minutes, the torrent files will be saved to the `torrents` directory. 
+
+I recommend you to use `pm2` to run p2pspider in `cluster` mode, you will see a CRAZY p2pspider. 
+
+p2pspider only works on a host which has a public ip.
 
 ## Protocols
 [bep_0005](http://www.bittorrent.org/beps/bep_0005.html), [bep_0003](http://www.bittorrent.org/beps/bep_0003.html), [bep_0010](http://www.bittorrent.org/beps/bep_0010.html), [bep_0009](http://www.bittorrent.org/beps/bep_0009.html)
