@@ -14,6 +14,9 @@ p2pspider 是一个种子爬虫, 它从全球 P2P 网络下载当前活跃的种
 go get github.com/fanpei91/p2pspider
 ```
 
+### 下载可执行文件
+[Download p2pspider](https://github.com/fanpei91/p2pspider/releases)
+
 ## 使用
 ```bash
 p2pspider -h
@@ -67,6 +70,10 @@ You can use p2pspider to build your own torrent database(e.g: The Pirate Bay), o
 go get github.com/fanpei91/p2pspider
 ```
 
+### Download executable p2pspider
+[Download p2pspider](https://github.com/fanpei91/p2pspider/releases)
+
+# Usage
 ```bash
 p2pspider -h
 
