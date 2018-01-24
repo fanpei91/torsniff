@@ -105,7 +105,7 @@ p2pspider
 
 p2pspider only works on a host which has a public ip.
 
-## Feferences
+## References
 [bep_0005](http://www.bittorrent.org/beps/bep_0005.html), [bep_0003](http://www.bittorrent.org/beps/bep_0003.html), [bep_0010](http://www.bittorrent.org/beps/bep_0010.html), [bep_0009](http://www.bittorrent.org/beps/bep_0009.html)
 
 ## License
