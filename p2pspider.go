@@ -80,9 +80,17 @@ func newTorrent(meta []byte, infohashHex string) (*torrent, error) {
 			var filename string
 			var filelength int64
 			if f, ok := file.(map[string]interface{}); ok {
-				if path, ok := f["path.utf-8"].([]string); ok {
+				if inter, ok := f["path.utf-8"].([]interface{}); ok {
+					path := make([]string, len(inter))
+					for i, v := range inter {
+					    path[i] = fmt.Sprint(v)
+					}
 					filename = strings.Join(path, "/")
-				} else if path, ok := f["path"].([]string); ok {
+				} else if inter, ok := f["path"].([]interface{}); ok {
+					path := make([]string, len(inter))
+					for i, v := range inter {
+					    path[i] = fmt.Sprint(v)
+					}
 					filename = strings.Join(path, "/")
 				}
 				if length, ok := f["length"].(int64); ok {
@@ -95,6 +103,9 @@ func newTorrent(meta []byte, infohashHex string) (*torrent, error) {
 	}
 	if t.length == 0 {
 		t.length = total
+	}
+	if len(t.files) == 0 {
+		t.files = append(t.files, &tfile{name: t.name, length: t.length})
 	}
 	return t, nil
 }
