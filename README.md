@@ -1,6 +1,6 @@
 ## 介绍
 
-p2pspider 是一个种子嗅探器, 它从全球 BitTorrent 网络下载当前活跃的种子。
+p2pspider 是一个种子嗅探器, 它从全球 BitTorrent 网络嗅探并保存当前活跃的种子。
 
 [English document](https://github.com/fanpei91/p2pspider#introduction)
 
