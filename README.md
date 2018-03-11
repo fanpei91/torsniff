@@ -1,6 +1,6 @@
 ## 介绍
 
-p2pspider 是一个种子爬虫, 它从全球 P2P 网络下载当前活跃的种子。
+p2pspider 是一个种子嗅探器, 它从全球 BitTorrent 网络下载当前活跃的种子。
 
 [English document](https://github.com/fanpei91/p2pspider#introduction)
 
@@ -59,7 +59,7 @@ MIT
 ---
 
 ## Introduction
-p2pspider is a torrent spider, it crawls torrents that people are using to download resource from the P2P network.
+p2pspider is a torrent sniffer, it crawls torrents that people are using to download resource from the BitTorrent network.
 
 ## What you can do with it
 You can use p2pspider to build your own torrent database(e.g: The Pirate Bay), or data mining and analyzing.
