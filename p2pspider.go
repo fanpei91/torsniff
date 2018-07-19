@@ -115,7 +115,7 @@ type blacklist struct {
 	expiredAfter time.Duration
 }
 
-func newBalckList(expiredAfter time.Duration) *blacklist {
+func newBlackList(expiredAfter time.Duration) *blacklist {
 	b := &blacklist{expiredAfter: expiredAfter}
 	go b.sweep()
 	return b
@@ -275,7 +275,7 @@ func main() {
 		maxPeers:   *peers,
 		secret:     *secret,
 		dir:        absDir,
-		blacklist:  newBalckList(10 * time.Minute),
+		blacklist:  newBlackList(10 * time.Minute),
 	}
 	p.run()
 }
