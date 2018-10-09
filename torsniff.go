@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/fanpei91/bencode"
+	"github.com/marksamman/bencode"
 	"github.com/spf13/cobra"
 )
 
