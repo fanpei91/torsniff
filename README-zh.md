@@ -23,7 +23,7 @@ Usage:
 
 Flags:
   -a, --addr string        listen on given address (default "0.0.0.0")
-  -d, --dir string         the directory to store the torrents (default "/Users/iTorm")
+  -d, --dir string         the directory to store the torrents (default "$HOME/torrents")
   -h, --help               help for torsniff
   -f, --maxFriends int     max fiends to make with per second (default 500)
   -e, --peers int          max peers(TCP) to connect to download torrents (default 400)
