@@ -1,0 +1,49 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "Llj7E0xszc7sOXDkwxt/BjKiCIE=",
+			"path": "github.com/fanpei91/bencode",
+			"revision": "dc84f26e086e81e5025e4db80274a96a5698df79",
+			"revisionTime": "2015-08-21T14:35:21Z"
+		},
+		{
+			"checksumSHA1": "40vJyUB4ezQSn/NSadsKEOrudMc=",
+			"path": "github.com/inconshreveable/mousetrap",
+			"revision": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",
+			"revisionTime": "2014-10-17T20:07:13Z"
+		},
+		{
+			"checksumSHA1": "h5Zjty1aLMJrReAfzsMFYTLbdOA=",
+			"path": "github.com/marksamman/bencode",
+			"revision": "dc84f26e086e81e5025e4db80274a96a5698df79",
+			"revisionTime": "2015-08-21T14:35:21Z"
+		},
+		{
+			"checksumSHA1": "YMGD3aMJlxhrWBzLlTqPhTLyxG4=",
+			"path": "github.com/spf13/cobra",
+			"revision": "99dc123558852f67743bd0b2caf8383cb3c6d720",
+			"revisionTime": "2018-08-29T16:07:45Z"
+		},
+		{
+			"checksumSHA1": "WVKhLVXQFxXwmuRX+IRzebUmxjE=",
+			"path": "github.com/spf13/pflag",
+			"revision": "298182f68c66c05229eb03ac171abe6e309ee79a",
+			"revisionTime": "2018-08-31T15:14:32Z"
+		},
+		{
+			"checksumSHA1": "GtamqiJoL7PGHsN454AoffBFMa8=",
+			"path": "golang.org/x/net/context",
+			"revision": "b3c676e531a6dc479fa1b35ac961c13f5e2b4d2e",
+			"revisionTime": "2018-03-20T04:45:06Z"
+		},
+		{
+			"checksumSHA1": "vGfePfr0+weQUeTM/71mu+LCFuE=",
+			"path": "golang.org/x/time/rate",
+			"revision": "6dc17368e09b0e8634d71cac8168d853e869a0c7",
+			"revisionTime": "2017-07-19T03:46:07Z"
+		}
+	],
+	"rootPath": "github.com/fanpei91/torsniff"
+}
