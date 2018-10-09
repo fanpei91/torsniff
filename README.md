@@ -1,4 +1,4 @@
-torsniff - a sniffer fetching torrents from BT network
+torsniff - a sniffer fetching torrents from BitTorrent network
 ======================================
 
 
