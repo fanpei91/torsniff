@@ -5,9 +5,9 @@ torsniff - a sniffer fetching torrents from BitTorrent network
 **English** | [简体中文](./README-zh.md)
 
 ## Introduction
-torsniff is a torrent sniffer, it fetches torrents that people are using to download moives, music, docs, games and so on from the BitTorrent network.
+torsniff is a torrent sniffer, it fetches torrents that people are using to download movies, music, docs, games and so on from the BitTorrent network.
 
-A torrent have valuable infomation, so you can use torsniff to build your own torrent database(e.g: The Pirate Bay), or to do data mining and analyzing.
+A torrent has valuable information, so you can use torsniff to build your own torrent database(e.g: The Pirate Bay), or to do data mining and analyzing.
 
 
 ## Installation
