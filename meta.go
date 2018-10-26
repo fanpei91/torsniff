@@ -25,7 +25,7 @@ const (
 )
 
 var (
-	errExtHeader    = errors.New("invalid extention header response")
+	errExtHeader    = errors.New("invalid extension header response")
 	errInvalidPiece = errors.New("invalid piece response")
 	errTimeout      = errors.New("time out")
 )
@@ -156,7 +156,7 @@ func (mw *metaWire) onHandshake(ctx context.Context) {
 		return
 	}
 	if res[25]&0x10 != 0x10 {
-		mw.err = errors.New("remote peer not supporting extention protocol")
+		mw.err = errors.New("remote peer not supporting extension protocol")
 		return
 	}
 	if !bytes.Equal(res[28:48], []byte(mw.infohash)) {
@@ -267,15 +267,15 @@ func (mw *metaWire) onPiece(ctx context.Context, payload []byte) ([]byte, int, e
 	if err != nil {
 		return nil, 0, errInvalidPiece
 	}
-	peiceIndex, ok := dict["piece"].(int64)
-	if !ok || int(peiceIndex) >= mw.numOfPieces {
+	pieceIndex, ok := dict["piece"].(int64)
+	if !ok || int(pieceIndex) >= mw.numOfPieces {
 		return nil, 0, errInvalidPiece
 	}
 	msgType, ok := dict["msg_type"].(int64)
 	if !ok || msgType != 1 {
 		return nil, 0, errInvalidPiece
 	}
-	return payload[trailerIndex:], int(peiceIndex), nil
+	return payload[trailerIndex:], int(pieceIndex), nil
 }
 
 func (mw *metaWire) checkDone() bool {

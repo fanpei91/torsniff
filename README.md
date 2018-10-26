@@ -12,7 +12,7 @@ A torrent has valuable information, so you can use torsniff to build your own to
 
 ## Installation
 
-Just download torsniff from [releases](https://github.com/fanpei91/torsniff/releases) directly. If you want to install from compiling source code, you figure out the way by yourslef. :)
+Just download torsniff from [releases](https://github.com/fanpei91/torsniff/releases) directly. If you want to install from compiling source code, you figure out the way by yourself. :)
 
 ## Usage
 
