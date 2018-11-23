@@ -16,7 +16,7 @@ Just download torsniff from [releases](https://github.com/fanpei91/torsniff/rele
 
 ## Usage
 
-```bash
+```
 $ ./torsniff -h
 
 Usage:
