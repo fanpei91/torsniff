@@ -244,7 +244,7 @@ func (t *torsniff) torrentPath(infohashHex string) (name string, dir string) {
 
 func main() {
 	var addr string
-	var port int16
+	var port uint16
 	var peers int
 	var timeout time.Duration
 	var dir string
@@ -280,7 +280,7 @@ func main() {
 		},
 	}
 	root.Flags().StringVarP(&addr, "addr", "a", "0.0.0.0", "listen on given address")
-	root.Flags().Int16VarP(&port, "port", "p", 6881, "listen on given port")
+	root.Flags().Uint16VarP(&port, "port", "p", 6881, "listen on given port")
 	root.Flags().IntVarP(&maxFriends, "maxFriends", "f", 500, "max fiends to make with per second")
 	root.Flags().IntVarP(&peers, "peers", "e", 400, "max peers to connect to download torrents")
 	root.Flags().DurationVarP(&timeout, "timeout", "t", 10*time.Second, "max time allowed for downloading torrents")
