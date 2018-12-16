@@ -128,8 +128,8 @@ func newDHT(laddr string) (*dht, error) {
 }
 
 func (g *dht) listen() error {
-	buf := make([]byte, 8192)
 	for {
+		buf := make([]byte, 2048)
 		n, addr, err := g.conn.ReadFromUDP(buf)
 		if err == nil {
 			go g.onMessage(buf[:n], *addr)
