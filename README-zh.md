@@ -40,7 +40,8 @@ Flags:
 种子默认保存在 `$HOME/torrents` 目录里。
 
 ## 必要条件
-需要一个有公网 ip 的主机，如果想在私有内网的主机上运行，需要配置端口转发。
+* 需要一个有公网 ip 的主机，如果想在私有内网的主机上运行，需要配置端口转发。
+* 运行 UDP 流量通过防火墙
 
 ## 协议
 - [DHT Protocol](http://www.bittorrent.org/beps/bep_0005.html)

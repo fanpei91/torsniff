@@ -40,7 +40,8 @@ Use default flags:
 
 ## Requirement
 
-A host having a public IP, or UDP port forwarding in private network.
+* A host having a public IP, or UDP port forwarding in private network
+* Allow UDP traffic get through firewall.
 
 ## Protocols
 - [DHT Protocol](http://www.bittorrent.org/beps/bep_0005.html)
