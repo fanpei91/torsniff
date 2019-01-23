@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"container/list"
 	"crypto/rand"
 	"crypto/sha1"
 	"encoding/binary"
@@ -10,9 +11,8 @@ import (
 	"strconv"
 	"time"
 
-	"golang.org/x/time/rate"
-
 	"github.com/marksamman/bencode"
+	"golang.org/x/time/rate"
 )
 
 var seed = []string{
@@ -74,6 +74,7 @@ func decodeNodes(s string) (nodes []*node) {
 	if length%26 != 0 {
 		return
 	}
+
 	for i := 0; i < length; i += 26 {
 		id := s[i : i+20]
 		ip := net.IP([]byte(s[i+20 : i+24])).String()
@@ -81,6 +82,7 @@ func decodeNodes(s string) (nodes []*node) {
 		addr := ip + ":" + strconv.Itoa(int(port))
 		nodes = append(nodes, &node{id: id, addr: addr})
 	}
+
 	return
 }
 
@@ -89,57 +91,71 @@ func per(events int, duration time.Duration) rate.Limit {
 }
 
 type dht struct {
-	chAnnouncement   chan *announcement
-	chNode           chan *node
-	localID          nodeID
-	conn             *net.UDPConn
-	queryTypes       map[string]func(map[string]interface{}, net.UDPAddr)
-	friendsLimiter   *rate.Limiter
-	announceMaxCache int
-	maxFriendsPerSec int
-	secret           string
-	bootstraps       []string
+	announcements        *list.List
+	announcementNotifier chan struct{}
+	chNode               chan *node
+	die                  chan struct{}
+	errDie               error
+	localID              nodeID
+	conn                 *net.UDPConn
+	queryTypes           map[string]func(map[string]interface{}, net.UDPAddr)
+	friendsLimiter       *rate.Limiter
+	maxAnnouncements     int
+	secret               string
+	bootstraps           []string
 }
 
-func newDHT(laddr string) (*dht, error) {
+func newDHT(laddr string, maxFriendsPerSec int) (*dht, error) {
 	conn, err := net.ListenPacket("udp4", laddr)
 	if err != nil {
 		return nil, err
 	}
+
 	g := &dht{
-		localID:          randBytes(20),
-		conn:             conn.(*net.UDPConn),
-		chNode:           make(chan *node),
-		maxFriendsPerSec: 200,
-		secret:           string(randBytes(20)),
-		bootstraps:       seed,
+		announcements: list.New(),
+		localID:       randBytes(20),
+		conn:          conn.(*net.UDPConn),
+		chNode:        make(chan *node),
+		die:           make(chan struct{}),
+		secret:        string(randBytes(20)),
+		bootstraps:    seed,
 	}
-	g.announceMaxCache = g.maxFriendsPerSec * 2
-	g.friendsLimiter = rate.NewLimiter(per(g.maxFriendsPerSec, time.Second), g.maxFriendsPerSec)
-	g.chAnnouncement = make(chan *announcement, g.announceMaxCache)
+	g.maxAnnouncements = maxFriendsPerSec * 10
+	g.friendsLimiter = rate.NewLimiter(per(maxFriendsPerSec, time.Second), maxFriendsPerSec)
+	g.announcementNotifier = make(chan struct{}, 1)
 	g.queryTypes = map[string]func(map[string]interface{}, net.UDPAddr){
 		"get_peers":     g.onGetPeersQuery,
 		"announce_peer": g.onAnnouncePeerQuery,
 	}
+
 	go g.listen()
 	go g.join()
 	go g.makefriends()
+
 	return g, nil
 }
 
-func (g *dht) listen() error {
+func (g *dht) listen() {
 	for {
-		buf := make([]byte, 2048)
+		buf := packetPool.get()
 		n, addr, err := g.conn.ReadFromUDP(buf)
 		if err == nil {
-			go g.onMessage(buf[:n], *addr)
+			g.onMessage(buf[:n], *addr)
+		} else {
+			g.errDie = err
+			close(g.die)
+			break
 		}
+		packetPool.put(buf)
 	}
 }
 
 func (g *dht) join() {
-	for _, addr := range g.bootstraps {
-		g.chNode <- &node{addr: addr, id: string(randBytes(20))}
+	const times = 3
+	for i := 0; i < times; i++ {
+		for _, addr := range g.bootstraps {
+			g.chNode <- &node{addr: addr, id: string(randBytes(20))}
+		}
 	}
 }
 
@@ -148,10 +164,12 @@ func (g *dht) onMessage(data []byte, from net.UDPAddr) {
 	if err != nil {
 		return
 	}
+
 	y, ok := dict["y"].(string)
 	if !ok {
 		return
 	}
+
 	switch y {
 	case "q":
 		g.onQuery(dict, from)
@@ -165,10 +183,12 @@ func (g *dht) onQuery(dict map[string]interface{}, from net.UDPAddr) {
 	if !ok {
 		return
 	}
+
 	q, ok := dict["q"].(string)
 	if !ok {
 		return
 	}
+
 	if f, ok := g.queryTypes[q]; ok {
 		f(dict, from)
 	}
@@ -179,14 +199,17 @@ func (g *dht) onReply(dict map[string]interface{}, from net.UDPAddr) {
 	if !ok {
 		return
 	}
+
 	nodes, ok := r["nodes"].(string)
 	if !ok {
 		return
 	}
+
 	for _, node := range decodeNodes(nodes) {
 		if !g.friendsLimiter.Allow() {
 			continue
 		}
+
 		g.chNode <- node
 	}
 }
@@ -196,10 +219,12 @@ func (g *dht) findNode(to string, target nodeID) {
 		"id":     string(neighborID(target, g.localID)),
 		"target": string(randBytes(20)),
 	})
+
 	addr, err := net.ResolveUDPAddr("udp4", to)
 	if err != nil {
 		return
 	}
+
 	g.send(d, *addr)
 }
 
@@ -209,10 +234,12 @@ func (g *dht) onGetPeersQuery(dict map[string]interface{}, from net.UDPAddr) {
 	if !ok {
 		return
 	}
+
 	id, ok := a["id"].(string)
 	if !ok {
 		return
 	}
+
 	d := makeReply(t, map[string]interface{}{
 		"id":    string(neighborID([]byte(id), g.localID)),
 		"nodes": "",
@@ -222,19 +249,27 @@ func (g *dht) onGetPeersQuery(dict map[string]interface{}, from net.UDPAddr) {
 }
 
 func (g *dht) onAnnouncePeerQuery(dict map[string]interface{}, from net.UDPAddr) {
+	if g.announcements.Len() >= g.maxAnnouncements {
+		return
+	}
+
 	a, ok := dict["a"].(map[string]interface{})
 	if !ok {
 		return
 	}
+
 	token, ok := a["token"].(string)
 	if !ok || !g.validateToken(token, from) {
 		return
 	}
-	if len(g.chAnnouncement) == g.announceMaxCache {
-		return
-	}
+
 	if ac := g.summarize(dict, from); ac != nil {
-		g.chAnnouncement <- ac
+		g.announcements.PushBack(ac)
+
+		select {
+		case g.announcementNotifier <- struct{}{}:
+		default:
+		}
 	}
 }
 
@@ -243,16 +278,19 @@ func (g *dht) summarize(dict map[string]interface{}, from net.UDPAddr) *announce
 	if !ok {
 		return nil
 	}
+
 	infohash, ok := a["info_hash"].(string)
 	if !ok {
 		return nil
 	}
+
 	port := int64(from.Port)
 	if impliedPort, ok := a["implied_port"].(int64); ok && impliedPort == 0 {
 		if p, ok := a["port"].(int64); ok {
 			port = p
 		}
 	}
+
 	return &announcement{
 		raw:         dict,
 		from:        from,

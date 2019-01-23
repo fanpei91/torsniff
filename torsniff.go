@@ -2,10 +2,10 @@ package main
 
 import (
 	"bytes"
+	"container/list"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net"
 	"os"
 	"path"
 	"path/filepath"
@@ -63,6 +63,7 @@ func newTorrent(meta []byte, infohashHex string) (*torrent, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	t := &torrent{infohashHex: infohashHex}
 	if name, ok := dict["name.utf-8"].(string); ok {
 		t.name = name
@@ -72,6 +73,7 @@ func newTorrent(meta []byte, infohashHex string) (*torrent, error) {
 	if length, ok := dict["length"].(int64); ok {
 		t.length = length
 	}
+
 	var totalSize int64
 	var extractFiles = func(file map[string]interface{}) {
 		var filename string
@@ -95,6 +97,7 @@ func newTorrent(meta []byte, infohashHex string) (*torrent, error) {
 		}
 		t.files = append(t.files, &tfile{name: filename, length: filelength})
 	}
+
 	if files, ok := dict["files"].([]interface{}); ok {
 		for _, file := range files {
 			if f, ok := file.(map[string]interface{}); ok {
@@ -102,105 +105,95 @@ func newTorrent(meta []byte, infohashHex string) (*torrent, error) {
 			}
 		}
 	}
+
 	if t.length == 0 {
 		t.length = totalSize
 	}
 	if len(t.files) == 0 {
 		t.files = append(t.files, &tfile{name: t.name, length: t.length})
 	}
+
 	return t, nil
 }
 
-type blacklist struct {
-	container    sync.Map
-	expiredAfter time.Duration
-}
-
-func newBlackList(expiredAfter time.Duration) *blacklist {
-	b := &blacklist{expiredAfter: expiredAfter}
-	go b.clean()
-	return b
-}
-
-func (b *blacklist) in(addr net.Addr) bool {
-	key := addr.String()
-	v, ok := b.container.Load(key)
-	if !ok {
-		return false
-	}
-	c := v.(time.Time)
-	if c.Sub(time.Now()) > b.expiredAfter {
-		b.container.Delete(key)
-		return false
-	}
-	return true
-}
-
-func (b *blacklist) add(addr net.Addr) {
-	b.container.Store(addr.String(), time.Now())
-}
-
-func (b *blacklist) clean() {
-	for range time.Tick(10 * time.Second) {
-		now := time.Now()
-		b.container.Range(func(k, v interface{}) bool {
-			c := v.(time.Time)
-			if c.Sub(now) > b.expiredAfter {
-				b.container.Delete(k)
-			}
-			return true
-		})
-	}
-}
-
 type torsniff struct {
+	mu         sync.RWMutex
 	laddr      string
 	maxFriends int
 	maxPeers   int
 	secret     string
 	timeout    time.Duration
-	blacklist  *blacklist
+	blacklist  *blackList
 	dir        string
 }
 
-func (t *torsniff) run() {
+func (t *torsniff) run() error {
 	tokens := make(chan struct{}, t.maxPeers)
-	dht, err := newDHT(t.laddr)
+
+	dht, err := newDHT(t.laddr, t.maxFriends)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
 	log.Println("running, it may take a few minutes...")
-	for ac := range dht.chAnnouncement {
-		tokens <- struct{}{}
-		go t.work(ac, tokens)
+
+	for {
+		select {
+		case <-dht.announcementNotifier:
+			var next *list.Element
+			for e := dht.announcements.Front(); e != nil; e = next {
+				tokens <- struct{}{}
+				next = e.Next()
+				ac := e.Value.(*announcement)
+				go t.work(ac, tokens)
+				dht.announcements.Remove(e)
+			}
+		case <-dht.die:
+			return dht.errDie
+		}
 	}
+
+	return nil
 }
 
 func (t *torsniff) work(ac *announcement, tokens chan struct{}) {
 	defer func() {
 		<-tokens
 	}()
+
 	if t.isTorrentExist(ac.infohashHex) {
 		return
 	}
-	if t.blacklist.in(ac.peer) {
+
+	t.mu.RLock()
+	peerAddr := ac.peer.String()
+	if t.blacklist.has(peerAddr) {
+		t.mu.RUnlock()
 		return
 	}
-	wire := newMetaWire(string(ac.infohash), ac.peer.String())
+	t.mu.RUnlock()
+
+	wire := newMetaWire(string(ac.infohash), peerAddr)
 	defer metaWirePool.Put(wire)
+
 	data, err := wire.fetch()
 	if err != nil {
-		t.blacklist.add(ac.peer)
+		t.mu.Lock()
+		t.blacklist.add(peerAddr)
+		t.mu.Unlock()
 		return
 	}
+
 	_, err = t.saveTorrent(ac.infohashHex, data)
 	if err != nil {
 		return
 	}
+
 	torrent, err := newTorrent(data, ac.infohashHex)
 	if err != nil {
 		return
 	}
+
 	log.Println(torrent)
 }
 
@@ -218,21 +211,26 @@ func (t *torsniff) saveTorrent(infohashHex string, data []byte) (string, error) 
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return "", err
 	}
+
 	f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE, 0755)
 	if err != nil {
 		return "", err
 	}
+
 	defer f.Close()
+
 	d, err := bencode.Decode(bytes.NewBuffer(data))
 	if err != nil {
 		return "", err
 	}
+
 	_, err = f.Write(bencode.Encode(map[string]interface{}{
 		"info": d,
 	}))
 	if err != nil {
 		return "", err
 	}
+
 	return name, nil
 }
 
@@ -243,41 +241,43 @@ func (t *torsniff) torrentPath(infohashHex string) (name string, dir string) {
 }
 
 func main() {
+	log.SetFlags(0)
+
 	var addr string
 	var port uint16
 	var peers int
 	var timeout time.Duration
 	var dir string
 	var verbose bool
-
 	var maxFriends int
-	var root = &cobra.Command{
+
+	root := &cobra.Command{
 		Use:          "torsniff",
 		Short:        "torsniff - a sniffer fetching torrents from BT network",
 		SilenceUsage: true,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			absDir, err := filepath.Abs(dir)
-			if err != nil {
-				panic(err)
-			}
-			log.SetFlags(0)
-			if verbose {
-				log.SetOutput(os.Stdout)
-			} else {
-				log.SetOutput(ioutil.Discard)
-			}
-			p := &torsniff{
-				laddr:      fmt.Sprintf("%s:%d", addr, port),
-				timeout:    timeout,
-				maxFriends: maxFriends,
-				maxPeers:   peers,
-				secret:     randomPeerID(),
-				dir:        absDir,
-				blacklist:  newBlackList(10 * time.Minute),
-			}
-			p.run()
-			return nil
-		},
+	}
+	root.RunE = func(cmd *cobra.Command, args []string) error {
+		absDir, err := filepath.Abs(dir)
+		if err != nil {
+			return err
+		}
+
+		if verbose {
+			log.SetOutput(os.Stdout)
+		} else {
+			log.SetOutput(ioutil.Discard)
+		}
+
+		p := &torsniff{
+			laddr:      fmt.Sprintf("%s:%d", addr, port),
+			timeout:    timeout,
+			maxFriends: maxFriends,
+			maxPeers:   peers,
+			secret:     randomPeerID(),
+			dir:        absDir,
+			blacklist:  newBlackList(5*time.Minute, 50000),
+		}
+		return p.run()
 	}
 	root.Flags().StringVarP(&addr, "addr", "a", "0.0.0.0", "listen on given address")
 	root.Flags().Uint16VarP(&port, "port", "p", 6881, "listen on given port")
@@ -286,7 +286,8 @@ func main() {
 	root.Flags().DurationVarP(&timeout, "timeout", "t", 10*time.Second, "max time allowed for downloading torrents")
 	root.Flags().StringVarP(&dir, "dir", "d", path.Join(homeDir(), directory), "the directory to store the torrents")
 	root.Flags().BoolVarP(&verbose, "verbose", "v", true, "run in verbose mode")
+
 	if err := root.Execute(); err != nil {
-		panic(fmt.Errorf("could not start: %v", err))
+		fmt.Errorf("could not start: %s\n", err)
 	}
 }
