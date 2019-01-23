@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"crypto/rand"
 	"crypto/sha1"
 	"encoding/binary"
 	"errors"
@@ -35,12 +34,6 @@ var metaWirePool = sync.Pool{
 	},
 }
 
-func randomPeerID() string {
-	b := make([]byte, 20)
-	rand.Read(b)
-	return string(b)
-}
-
 type metaWire struct {
 	infohash     string
 	from         string
@@ -54,12 +47,14 @@ type metaWire struct {
 	err          error
 }
 
-func newMetaWire(infohash string, from string) *metaWire {
+func newMetaWire(infohash string, from string, timeout time.Duration) *metaWire {
 	w := metaWirePool.Get().(*metaWire)
 	w.infohash = infohash
 	w.from = from
-	w.peerID = randomPeerID()
-	w.timeout = 10 * time.Second
+	w.peerID = string(randBytes(20))
+	w.timeout = timeout
+	w.conn = nil
+	w.err = nil
 	return w
 }
 
@@ -111,13 +106,6 @@ func (mw *metaWire) fetchCtx(ctx context.Context) ([]byte, error) {
 }
 
 func (mw *metaWire) connect(ctx context.Context) {
-	select {
-	case <-ctx.Done():
-		mw.err = errTimeout
-		return
-	default:
-	}
-
 	conn, err := net.DialTimeout("tcp", mw.from, mw.timeout)
 	if err != nil {
 		mw.err = fmt.Errorf("connect to remote peer failed: %v", err)
@@ -197,7 +185,7 @@ func (mw *metaWire) extHandshake(ctx context.Context) {
 			"ut_metadata": 1,
 		},
 	})...)
-	if err := mw.send(ctx, data); err != nil {
+	if err := mw.write(ctx, data); err != nil {
 		mw.err = err
 		return
 	}
@@ -261,7 +249,7 @@ func (mw *metaWire) requestPiece(ctx context.Context, i int) {
 		"msg_type": 0,
 		"piece":    i,
 	}))
-	mw.send(ctx, buf.Bytes())
+	mw.write(ctx, buf.Bytes())
 }
 
 func (mw *metaWire) onExtended(ctx context.Context, ext byte, payload []byte) error {
@@ -357,7 +345,7 @@ func (mw *metaWire) read(ctx context.Context, size uint32) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (mw *metaWire) send(ctx context.Context, data []byte) error {
+func (mw *metaWire) write(ctx context.Context, data []byte) error {
 	select {
 	case <-ctx.Done():
 		return errTimeout
@@ -370,8 +358,12 @@ func (mw *metaWire) send(ctx context.Context, data []byte) error {
 	buf.Write(data)
 	_, err := mw.conn.Write(buf.Bytes())
 	if err != nil {
-		return fmt.Errorf("send message failed: %v", err)
+		return fmt.Errorf("write message failed: %v", err)
 	}
 
 	return nil
+}
+
+func (mw *metaWire) free() {
+	metaWirePool.Put(mw)
 }

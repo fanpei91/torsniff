@@ -45,28 +45,26 @@ func randBytes(n int) []byte {
 func neighborID(target nodeID, local nodeID) nodeID {
 	const closeness = 15
 	id := make([]byte, 20)
-	copy(id[:10], target[:closeness])
-	copy(id[10:], local[closeness:])
+	copy(id[:closeness], target[:closeness])
+	copy(id[closeness:], local[closeness:])
 	return id
 }
 
 func makeQuery(tid string, q string, a map[string]interface{}) map[string]interface{} {
-	dict := map[string]interface{}{
+	return map[string]interface{}{
 		"t": tid,
 		"y": "q",
 		"q": q,
 		"a": a,
 	}
-	return dict
 }
 
 func makeReply(tid string, r map[string]interface{}) map[string]interface{} {
-	dict := map[string]interface{}{
+	return map[string]interface{}{
 		"t": tid,
 		"y": "r",
 		"r": r,
 	}
-	return dict
 }
 
 func decodeNodes(s string) (nodes []*node) {
@@ -136,8 +134,8 @@ func newDHT(laddr string, maxFriendsPerSec int) (*dht, error) {
 }
 
 func (g *dht) listen() {
+	buf := make([]byte, 2048)
 	for {
-		buf := packetPool.get()
 		n, addr, err := g.conn.ReadFromUDP(buf)
 		if err == nil {
 			g.onMessage(buf[:n], *addr)
@@ -146,13 +144,12 @@ func (g *dht) listen() {
 			close(g.die)
 			break
 		}
-		packetPool.put(buf)
 	}
 }
 
 func (g *dht) join() {
-	const times = 3
-	for i := 0; i < times; i++ {
+	const timesForSure = 3
+	for i := 0; i < timesForSure; i++ {
 		for _, addr := range g.bootstraps {
 			g.chNode <- &node{addr: addr, id: string(randBytes(20))}
 		}
@@ -189,8 +186,8 @@ func (g *dht) onQuery(dict map[string]interface{}, from net.UDPAddr) {
 		return
 	}
 
-	if f, ok := g.queryTypes[q]; ok {
-		f(dict, from)
+	if handle, ok := g.queryTypes[q]; ok {
+		handle(dict, from)
 	}
 }
 
@@ -229,7 +226,7 @@ func (g *dht) findNode(to string, target nodeID) {
 }
 
 func (g *dht) onGetPeersQuery(dict map[string]interface{}, from net.UDPAddr) {
-	t := dict["t"].(string)
+	tid := dict["t"].(string)
 	a, ok := dict["a"].(map[string]interface{})
 	if !ok {
 		return
@@ -240,7 +237,7 @@ func (g *dht) onGetPeersQuery(dict map[string]interface{}, from net.UDPAddr) {
 		return
 	}
 
-	d := makeReply(t, map[string]interface{}{
+	d := makeReply(tid, map[string]interface{}{
 		"id":    string(neighborID([]byte(id), g.localID)),
 		"nodes": "",
 		"token": g.genToken(from),

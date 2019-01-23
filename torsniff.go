@@ -58,7 +58,7 @@ func (t *torrent) String() string {
 	)
 }
 
-func newTorrent(meta []byte, infohashHex string) (*torrent, error) {
+func parseTorrent(meta []byte, infohashHex string) (*torrent, error) {
 	dict, err := bencode.Decode(bytes.NewBuffer(meta))
 	if err != nil {
 		return nil, err
@@ -173,8 +173,8 @@ func (t *torsniff) work(ac *announcement, tokens chan struct{}) {
 	}
 	t.mu.RUnlock()
 
-	wire := newMetaWire(string(ac.infohash), peerAddr)
-	defer metaWirePool.Put(wire)
+	wire := newMetaWire(string(ac.infohash), peerAddr, t.timeout)
+	defer wire.free()
 
 	data, err := wire.fetch()
 	if err != nil {
@@ -189,7 +189,7 @@ func (t *torsniff) work(ac *announcement, tokens chan struct{}) {
 		return
 	}
 
-	torrent, err := newTorrent(data, ac.infohashHex)
+	torrent, err := parseTorrent(data, ac.infohashHex)
 	if err != nil {
 		return
 	}
@@ -262,10 +262,9 @@ func main() {
 			return err
 		}
 
+		log.SetOutput(ioutil.Discard)
 		if verbose {
 			log.SetOutput(os.Stdout)
-		} else {
-			log.SetOutput(ioutil.Discard)
 		}
 
 		p := &torsniff{
@@ -273,7 +272,7 @@ func main() {
 			timeout:    timeout,
 			maxFriends: maxFriends,
 			maxPeers:   peers,
-			secret:     randomPeerID(),
+			secret:     string(randBytes(20)),
 			dir:        absDir,
 			blacklist:  newBlackList(5*time.Minute, 50000),
 		}
