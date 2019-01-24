@@ -39,7 +39,7 @@ Flags:
 
 种子默认保存在 `$HOME/torrents` 目录里。
 
-## 必要条件
+## 环境要求
 * 需要一个有公网 IP 的主机（推荐，最好是国外），如果想在私有内网、NAT 内的主机上运行，需要配置端口转发、映射。
 * 允许 UDP 流量通过防火墙
 * 你的 ISP/主机商允许 BitTorrent 流量（torsniff 在 [vultr.com](https://www.vultr.com/?ref=7172229) 能良好运行）

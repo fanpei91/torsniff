@@ -38,7 +38,7 @@ Use default flags:
 
 `./torsniff`
 
-## Requirement
+## Requirements
 
 * A host having a public IP(recommended), or UDP port forwarding/port mapping in private network/NAT
 * Allow UDP traffic get through firewall
