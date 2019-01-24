@@ -2,6 +2,7 @@ package main
 
 import (
 	"container/list"
+	"sync"
 	"time"
 )
 
@@ -11,6 +12,7 @@ type entry struct {
 }
 
 type blackList struct {
+	mu           sync.Mutex
 	ll           *list.List
 	cache        map[string]*list.Element
 	expiredAfter time.Duration
@@ -27,7 +29,10 @@ func newBlackList(expiredAfter time.Duration, limit int) *blackList {
 }
 
 func (b *blackList) add(addr string) {
-	b.removeExpired()
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	b.removeExpiredLocked()
 
 	if b.ll.Len() >= b.limit {
 		return
@@ -43,6 +48,9 @@ func (b *blackList) add(addr string) {
 }
 
 func (b *blackList) has(addr string) bool {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
 	if elem := b.cache[addr]; elem != nil {
 		e := elem.Value.(*entry)
 		if time.Now().Sub(e.ctime) < b.expiredAfter {
@@ -55,7 +63,7 @@ func (b *blackList) has(addr string) bool {
 	return false
 }
 
-func (b *blackList) removeExpired() {
+func (b *blackList) removeExpiredLocked() {
 	now := time.Now()
 	var next *list.Element
 	for elem := b.ll.Front(); elem != nil; elem = next {

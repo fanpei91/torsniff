@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"container/list"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -11,7 +10,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/marksamman/bencode"
@@ -117,7 +115,6 @@ func parseTorrent(meta []byte, infohashHex string) (*torrent, error) {
 }
 
 type torsniff struct {
-	mu         sync.RWMutex
 	laddr      string
 	maxFriends int
 	maxPeers   int
@@ -135,18 +132,20 @@ func (t *torsniff) run() error {
 		return err
 	}
 
+	dht.run()
+
 	log.Println("running, it may take a few minutes...")
 
 	for {
 		select {
-		case <-dht.announcementNotifier:
-			var next *list.Element
-			for e := dht.announcements.Front(); e != nil; e = next {
-				tokens <- struct{}{}
-				next = e.Next()
-				ac := e.Value.(*announcement)
-				go t.work(ac, tokens)
-				dht.announcements.Remove(e)
+		case <-dht.announcements.wait():
+			for {
+				if ac := dht.announcements.get(); ac != nil {
+					tokens <- struct{}{}
+					go t.work(ac, tokens)
+					continue
+				}
+				break
 			}
 		case <-dht.die:
 			return dht.errDie
@@ -165,31 +164,26 @@ func (t *torsniff) work(ac *announcement, tokens chan struct{}) {
 		return
 	}
 
-	t.mu.RLock()
 	peerAddr := ac.peer.String()
 	if t.blacklist.has(peerAddr) {
-		t.mu.RUnlock()
 		return
 	}
-	t.mu.RUnlock()
 
 	wire := newMetaWire(string(ac.infohash), peerAddr, t.timeout)
 	defer wire.free()
 
-	data, err := wire.fetch()
+	meta, err := wire.fetch()
 	if err != nil {
-		t.mu.Lock()
 		t.blacklist.add(peerAddr)
-		t.mu.Unlock()
 		return
 	}
 
-	_, err = t.saveTorrent(ac.infohashHex, data)
+	_, err = t.saveTorrent(ac.infohashHex, meta)
 	if err != nil {
 		return
 	}
 
-	torrent, err := parseTorrent(data, ac.infohashHex)
+	torrent, err := parseTorrent(meta, ac.infohashHex)
 	if err != nil {
 		return
 	}
@@ -249,11 +243,11 @@ func main() {
 	var timeout time.Duration
 	var dir string
 	var verbose bool
-	var maxFriends int
+	var friends int
 
 	root := &cobra.Command{
 		Use:          "torsniff",
-		Short:        "torsniff - a sniffer fetching torrents from BT network",
+		Short:        "torsniff - a sniffer fetching torrents from BitTorrent network",
 		SilenceUsage: true,
 	}
 	root.RunE = func(cmd *cobra.Command, args []string) error {
@@ -270,7 +264,7 @@ func main() {
 		p := &torsniff{
 			laddr:      fmt.Sprintf("%s:%d", addr, port),
 			timeout:    timeout,
-			maxFriends: maxFriends,
+			maxFriends: friends,
 			maxPeers:   peers,
 			secret:     string(randBytes(20)),
 			dir:        absDir,
@@ -280,7 +274,7 @@ func main() {
 	}
 	root.Flags().StringVarP(&addr, "addr", "a", "0.0.0.0", "listen on given address")
 	root.Flags().Uint16VarP(&port, "port", "p", 6881, "listen on given port")
-	root.Flags().IntVarP(&maxFriends, "maxFriends", "f", 500, "max fiends to make with per second")
+	root.Flags().IntVarP(&friends, "friends", "f", 500, "max fiends to make with per second")
 	root.Flags().IntVarP(&peers, "peers", "e", 400, "max peers to connect to download torrents")
 	root.Flags().DurationVarP(&timeout, "timeout", "t", 10*time.Second, "max time allowed for downloading torrents")
 	root.Flags().StringVarP(&dir, "dir", "d", path.Join(homeDir(), directory), "the directory to store the torrents")

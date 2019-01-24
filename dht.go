@@ -9,13 +9,14 @@ import (
 	"encoding/hex"
 	"net"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/marksamman/bencode"
 	"golang.org/x/time/rate"
 )
 
-var seed = []string{
+var seeds = []string{
 	"router.bittorrent.com:6881",
 	"dht.transmissionbt.com:6881",
 	"router.utorrent.com:6881",
@@ -26,6 +27,52 @@ type nodeID []byte
 type node struct {
 	addr string
 	id   string
+}
+
+type announcements struct {
+	mu    sync.RWMutex
+	ll    *list.List
+	limit int
+	input chan struct{}
+}
+
+func (a *announcements) get() *announcement {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	if elem := a.ll.Front(); elem != nil {
+		ac := elem.Value.(*announcement)
+		a.ll.Remove(elem)
+		return ac
+	}
+
+	return nil
+}
+
+func (a *announcements) put(ac *announcement) {
+	a.mu.Lock()
+	a.ll.PushBack(ac)
+	a.mu.Unlock()
+
+	select {
+	case a.input <- struct{}{}:
+	default:
+	}
+}
+
+func (a *announcements) wait() <-chan struct{} {
+	return a.input
+}
+
+func (a *announcements) len() int {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+
+	return a.ll.Len()
+}
+
+func (a *announcements) full() bool {
+	return a.len() >= a.limit
 }
 
 type announcement struct {
@@ -89,18 +136,17 @@ func per(events int, duration time.Duration) rate.Limit {
 }
 
 type dht struct {
-	announcements        *list.List
-	announcementNotifier chan struct{}
-	chNode               chan *node
-	die                  chan struct{}
-	errDie               error
-	localID              nodeID
-	conn                 *net.UDPConn
-	queryTypes           map[string]func(map[string]interface{}, net.UDPAddr)
-	friendsLimiter       *rate.Limiter
-	maxAnnouncements     int
-	secret               string
-	bootstraps           []string
+	mu             sync.Mutex
+	announcements  *announcements
+	chNode         chan *node
+	die            chan struct{}
+	errDie         error
+	localID        nodeID
+	conn           *net.UDPConn
+	queryTypes     map[string]func(map[string]interface{}, net.UDPAddr)
+	friendsLimiter *rate.Limiter
+	secret         []byte
+	seeds          []string
 }
 
 func newDHT(laddr string, maxFriendsPerSec int) (*dht, error) {
@@ -109,54 +155,63 @@ func newDHT(laddr string, maxFriendsPerSec int) (*dht, error) {
 		return nil, err
 	}
 
-	g := &dht{
-		announcements: list.New(),
-		localID:       randBytes(20),
-		conn:          conn.(*net.UDPConn),
-		chNode:        make(chan *node),
-		die:           make(chan struct{}),
-		secret:        string(randBytes(20)),
-		bootstraps:    seed,
+	d := &dht{
+		announcements: &announcements{
+			ll:    list.New(),
+			limit: maxFriendsPerSec * 10,
+			input: make(chan struct{}, 1),
+		},
+		localID: randBytes(20),
+		conn:    conn.(*net.UDPConn),
+		chNode:  make(chan *node),
+		die:     make(chan struct{}),
+		secret:  randBytes(20),
 	}
-	g.maxAnnouncements = maxFriendsPerSec * 10
-	g.friendsLimiter = rate.NewLimiter(per(maxFriendsPerSec, time.Second), maxFriendsPerSec)
-	g.announcementNotifier = make(chan struct{}, 1)
-	g.queryTypes = map[string]func(map[string]interface{}, net.UDPAddr){
-		"get_peers":     g.onGetPeersQuery,
-		"announce_peer": g.onAnnouncePeerQuery,
+	d.friendsLimiter = rate.NewLimiter(per(maxFriendsPerSec, time.Second), maxFriendsPerSec)
+	d.queryTypes = map[string]func(map[string]interface{}, net.UDPAddr){
+		"get_peers":     d.onGetPeersQuery,
+		"announce_peer": d.onAnnouncePeerQuery,
 	}
-
-	go g.listen()
-	go g.join()
-	go g.makefriends()
-
-	return g, nil
+	return d, nil
 }
 
-func (g *dht) listen() {
+func (d *dht) run() {
+	go d.listen()
+	go d.join()
+	go d.makeFriends()
+}
+
+func (d *dht) listen() {
 	buf := make([]byte, 2048)
 	for {
-		n, addr, err := g.conn.ReadFromUDP(buf)
+		n, addr, err := d.conn.ReadFromUDP(buf)
 		if err == nil {
-			g.onMessage(buf[:n], *addr)
+			d.onMessage(buf[:n], *addr)
 		} else {
-			g.errDie = err
-			close(g.die)
+			d.errDie = err
+			close(d.die)
 			break
 		}
 	}
 }
 
-func (g *dht) join() {
+func (d *dht) join() {
 	const timesForSure = 3
 	for i := 0; i < timesForSure; i++ {
-		for _, addr := range g.bootstraps {
-			g.chNode <- &node{addr: addr, id: string(randBytes(20))}
+		for _, addr := range seeds {
+			select {
+			case d.chNode <- &node{
+				addr: addr,
+				id:   string(randBytes(20)),
+			}:
+			case <-d.die:
+				return
+			}
 		}
 	}
 }
 
-func (g *dht) onMessage(data []byte, from net.UDPAddr) {
+func (d *dht) onMessage(data []byte, from net.UDPAddr) {
 	dict, err := bencode.Decode(bytes.NewBuffer(data))
 	if err != nil {
 		return
@@ -169,13 +224,13 @@ func (g *dht) onMessage(data []byte, from net.UDPAddr) {
 
 	switch y {
 	case "q":
-		g.onQuery(dict, from)
+		d.onQuery(dict, from)
 	case "r", "e":
-		g.onReply(dict, from)
+		d.onReply(dict, from)
 	}
 }
 
-func (g *dht) onQuery(dict map[string]interface{}, from net.UDPAddr) {
+func (d *dht) onQuery(dict map[string]interface{}, from net.UDPAddr) {
 	_, ok := dict["t"].(string)
 	if !ok {
 		return
@@ -186,12 +241,12 @@ func (g *dht) onQuery(dict map[string]interface{}, from net.UDPAddr) {
 		return
 	}
 
-	if handle, ok := g.queryTypes[q]; ok {
+	if handle, ok := d.queryTypes[q]; ok {
 		handle(dict, from)
 	}
 }
 
-func (g *dht) onReply(dict map[string]interface{}, from net.UDPAddr) {
+func (d *dht) onReply(dict map[string]interface{}, from net.UDPAddr) {
 	r, ok := dict["r"].(map[string]interface{})
 	if !ok {
 		return
@@ -203,17 +258,17 @@ func (g *dht) onReply(dict map[string]interface{}, from net.UDPAddr) {
 	}
 
 	for _, node := range decodeNodes(nodes) {
-		if !g.friendsLimiter.Allow() {
+		if !d.friendsLimiter.Allow() {
 			continue
 		}
 
-		g.chNode <- node
+		d.chNode <- node
 	}
 }
 
-func (g *dht) findNode(to string, target nodeID) {
-	d := makeQuery(string(randBytes(2)), "find_node", map[string]interface{}{
-		"id":     string(neighborID(target, g.localID)),
+func (d *dht) findNode(to string, target nodeID) {
+	q := makeQuery(string(randBytes(2)), "find_node", map[string]interface{}{
+		"id":     string(neighborID(target, d.localID)),
 		"target": string(randBytes(20)),
 	})
 
@@ -222,11 +277,15 @@ func (g *dht) findNode(to string, target nodeID) {
 		return
 	}
 
-	g.send(d, *addr)
+	d.send(q, *addr)
 }
 
-func (g *dht) onGetPeersQuery(dict map[string]interface{}, from net.UDPAddr) {
-	tid := dict["t"].(string)
+func (d *dht) onGetPeersQuery(dict map[string]interface{}, from net.UDPAddr) {
+	tid, ok := dict["t"].(string)
+	if !ok {
+		return
+	}
+
 	a, ok := dict["a"].(map[string]interface{})
 	if !ok {
 		return
@@ -237,16 +296,16 @@ func (g *dht) onGetPeersQuery(dict map[string]interface{}, from net.UDPAddr) {
 		return
 	}
 
-	d := makeReply(tid, map[string]interface{}{
-		"id":    string(neighborID([]byte(id), g.localID)),
+	r := makeReply(tid, map[string]interface{}{
+		"id":    string(neighborID([]byte(id), d.localID)),
 		"nodes": "",
-		"token": g.genToken(from),
+		"token": d.makeToken(from),
 	})
-	g.send(d, from)
+	d.send(r, from)
 }
 
-func (g *dht) onAnnouncePeerQuery(dict map[string]interface{}, from net.UDPAddr) {
-	if g.announcements.Len() >= g.maxAnnouncements {
+func (d *dht) onAnnouncePeerQuery(dict map[string]interface{}, from net.UDPAddr) {
+	if d.announcements.full() {
 		return
 	}
 
@@ -256,21 +315,16 @@ func (g *dht) onAnnouncePeerQuery(dict map[string]interface{}, from net.UDPAddr)
 	}
 
 	token, ok := a["token"].(string)
-	if !ok || !g.validateToken(token, from) {
+	if !ok || !d.validateToken(token, from) {
 		return
 	}
 
-	if ac := g.summarize(dict, from); ac != nil {
-		g.announcements.PushBack(ac)
-
-		select {
-		case g.announcementNotifier <- struct{}{}:
-		default:
-		}
+	if ac := d.summarize(dict, from); ac != nil {
+		d.announcements.put(ac)
 	}
 }
 
-func (g *dht) summarize(dict map[string]interface{}, from net.UDPAddr) *announcement {
+func (d *dht) summarize(dict map[string]interface{}, from net.UDPAddr) *announcement {
 	a, ok := dict["a"].(map[string]interface{})
 	if !ok {
 		return nil
@@ -297,25 +351,32 @@ func (g *dht) summarize(dict map[string]interface{}, from net.UDPAddr) *announce
 	}
 }
 
-func (g *dht) send(dict map[string]interface{}, to net.UDPAddr) error {
-	g.conn.WriteToUDP(bencode.Encode(dict), &to)
+func (d *dht) send(dict map[string]interface{}, to net.UDPAddr) error {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	d.conn.WriteToUDP(bencode.Encode(dict), &to)
 	return nil
 }
 
-func (g *dht) makefriends() {
+func (d *dht) makeFriends() {
 	for {
-		node := <-g.chNode
-		g.findNode(node.addr, []byte(node.id))
+		select {
+		case node := <-d.chNode:
+			d.findNode(node.addr, []byte(node.id))
+		case <-d.die:
+			return
+		}
 	}
 }
 
-func (g *dht) genToken(from net.UDPAddr) string {
+func (d *dht) makeToken(from net.UDPAddr) string {
 	s := sha1.New()
-	s.Write(from.IP)
-	s.Write([]byte(g.secret))
+	s.Write([]byte(from.String()))
+	s.Write(d.secret)
 	return string(s.Sum(nil))
 }
 
-func (g *dht) validateToken(token string, from net.UDPAddr) bool {
-	return token == g.genToken(from)
+func (d *dht) validateToken(token string, from net.UDPAddr) bool {
+	return token == d.makeToken(from)
 }

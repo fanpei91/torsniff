@@ -11,7 +11,7 @@ torsniff 是一个种子嗅探器，它从 BitTorrent 网络获取人们下载�
 
 ## 安装
 
-直接从 [releases](https://github.com/fanpei91/torsniff/releases) 下载即可. 如果你想自己从源代码编译，那么你自己去琢磨怎么搞。:)
+直接从 [releases](https://github.com/fanpei91/torsniff/releases) 下载最新版即可. 
 
 ## 用法
 
@@ -25,7 +25,7 @@ Flags:
   -a, --addr string        listen on given address (default "0.0.0.0")
   -d, --dir string         the directory to store the torrents (default "$HOME/torrents")
   -h, --help               help for torsniff
-  -f, --maxFriends int     max fiends to make with per second (default 500)
+  -f, --friends int        max fiends to make with per second (default 500)
   -e, --peers int          max peers to connect to download torrents (default 400)
   -p, --port uint16        listen on given port (default 6881)
   -t, --timeout duration   max time allowed for downloading torrents (default 10s)
