@@ -40,8 +40,9 @@ Use default flags:
 
 ## Requirement
 
-* A host having a public IP, or UDP port forwarding in private network
-* Allow UDP traffic get through firewall.
+* A host having a public IP(recommended), or UDP port forwarding/port mapping in private network/NAT
+* Allow UDP traffic get through firewall
+* Your ISP/Hosting Provider allows BitTorrent traffic(torsniff works on [vultr.com](https://www.vultr.com/?ref=7172229))
 
 ## Protocols
 - [DHT Protocol](http://www.bittorrent.org/beps/bep_0005.html)
