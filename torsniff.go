@@ -8,27 +8,18 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
 	"github.com/marksamman/bencode"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"go.etcd.io/etcd/pkg/fileutil"
 )
 
 const (
 	directory = "torrents"
 )
-
-func homeDir() string {
-	env := "HOME"
-	if runtime.GOOS == "windows" {
-		env = "USERPROFILE"
-	} else if runtime.GOOS == "plan9" {
-		env = "home"
-	}
-	return os.Getenv(env)
-}
 
 type tfile struct {
 	name   string
@@ -178,8 +169,7 @@ func (t *torsniff) work(ac *announcement, tokens chan struct{}) {
 		return
 	}
 
-	_, err = t.saveTorrent(ac.infohashHex, meta)
-	if err != nil {
+	if err := t.saveTorrent(ac.infohashHex, meta); err != nil {
 		return
 	}
 
@@ -200,32 +190,31 @@ func (t *torsniff) isTorrentExist(infohashHex string) bool {
 	return err == nil
 }
 
-func (t *torsniff) saveTorrent(infohashHex string, data []byte) (string, error) {
+func (t *torsniff) saveTorrent(infohashHex string, data []byte) error {
 	name, dir := t.torrentPath(infohashHex)
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		return "", err
+		return err
 	}
-
-	f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE, 0755)
-	if err != nil {
-		return "", err
-	}
-
-	defer f.Close()
 
 	d, err := bencode.Decode(bytes.NewBuffer(data))
 	if err != nil {
-		return "", err
+		return err
 	}
+
+	f, err := fileutil.TryLockFile(name, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
 
 	_, err = f.Write(bencode.Encode(map[string]interface{}{
 		"info": d,
 	}))
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return name, nil
+	return nil
 }
 
 func (t *torsniff) torrentPath(infohashHex string) (name string, dir string) {
@@ -245,12 +234,19 @@ func main() {
 	var verbose bool
 	var friends int
 
+	home, err := homedir.Dir()
+	userHome := path.Join(home, directory)
+
 	root := &cobra.Command{
 		Use:          "torsniff",
-		Short:        "torsniff - a sniffer fetching torrents from BitTorrent network",
+		Short:        "torsniff - A sniffer that sniffs torrents from BitTorrent network.",
 		SilenceUsage: true,
 	}
 	root.RunE = func(cmd *cobra.Command, args []string) error {
+		if dir == userHome && err != nil {
+			return err
+		}
+
 		absDir, err := filepath.Abs(dir)
 		if err != nil {
 			return err
@@ -272,12 +268,13 @@ func main() {
 		}
 		return p.run()
 	}
+
 	root.Flags().StringVarP(&addr, "addr", "a", "0.0.0.0", "listen on given address")
 	root.Flags().Uint16VarP(&port, "port", "p", 6881, "listen on given port")
 	root.Flags().IntVarP(&friends, "friends", "f", 500, "max fiends to make with per second")
 	root.Flags().IntVarP(&peers, "peers", "e", 400, "max peers to connect to download torrents")
 	root.Flags().DurationVarP(&timeout, "timeout", "t", 10*time.Second, "max time allowed for downloading torrents")
-	root.Flags().StringVarP(&dir, "dir", "d", path.Join(homeDir(), directory), "the directory to store the torrents")
+	root.Flags().StringVarP(&dir, "dir", "d", userHome, "the directory to store the torrents")
 	root.Flags().BoolVarP(&verbose, "verbose", "v", true, "run in verbose mode")
 
 	if err := root.Execute(); err != nil {
