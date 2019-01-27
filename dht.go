@@ -51,8 +51,13 @@ func (a *announcements) get() *announcement {
 
 func (a *announcements) put(ac *announcement) {
 	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	if a.ll.Len() >= a.limit {
+		return
+	}
+
 	a.ll.PushBack(ac)
-	a.mu.Unlock()
 
 	select {
 	case a.input <- struct{}{}:
