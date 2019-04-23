@@ -4,6 +4,12 @@ torsniff - a sniffer that sniffs torrents from BitTorrent network
 
 **English** | [简体中文](./README-zh.md)
 
+## 救救开发者，他要饿死了
+找工作半年无果（不是我挑公司，是公司挑人），如果你喜欢该项目，请捐助一些钱给开发者救救他，要不然有一天你看到一个拿着《编程，从入门到流浪》看的流浪汉，说不定那人就是我。加我微信捐助：fuck_the_gfw
+
+
+我做梦都会感激你的！
+
 ## Introduction
 torsniff is a torrent sniffer, it sniffs torrents that people are using to download movies, music, docs, games and so on from BitTorrent network.
 
