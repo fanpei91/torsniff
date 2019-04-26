@@ -4,7 +4,6 @@ torsniff - a sniffer that sniffs torrents from BitTorrent network
 
 **English** | [简体中文](./README-zh.md)
 
-
 ## Introduction
 torsniff is a torrent sniffer, it sniffs torrents that people are using to download movies, music, docs, games and so on from BitTorrent network.
 
@@ -24,7 +23,7 @@ Usage:
   torsniff [flags]
 
 Flags:
-  -a, --addr string        listen on given address (default "0.0.0.0")
+  -a, --addr string        listen on given address (default all, ipv4 and ipv6)
   -d, --dir string         the directory to store the torrents (default "$HOME/torrents")
   -h, --help               help for torsniff
   -f, --friends int        max fiends to make with per second (default 500)

@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -143,7 +145,6 @@ func (t *torsniff) run() error {
 		}
 	}
 
-	return nil
 }
 
 func (t *torsniff) work(ac *announcement, tokens chan struct{}) {
@@ -257,8 +258,10 @@ func main() {
 			log.SetOutput(os.Stdout)
 		}
 
+		fmt.Println(absDir)
+
 		p := &torsniff{
-			laddr:      fmt.Sprintf("%s:%d", addr, port),
+			laddr:      net.JoinHostPort(addr, strconv.Itoa(int(port))),
 			timeout:    timeout,
 			maxFriends: friends,
 			maxPeers:   peers,
@@ -269,7 +272,7 @@ func main() {
 		return p.run()
 	}
 
-	root.Flags().StringVarP(&addr, "addr", "a", "0.0.0.0", "listen on given address")
+	root.Flags().StringVarP(&addr, "addr", "a", "", "listen on given address")
 	root.Flags().Uint16VarP(&port, "port", "p", 6881, "listen on given port")
 	root.Flags().IntVarP(&friends, "friends", "f", 500, "max fiends to make with per second")
 	root.Flags().IntVarP(&peers, "peers", "e", 400, "max peers to connect to download torrents")
@@ -278,6 +281,6 @@ func main() {
 	root.Flags().BoolVarP(&verbose, "verbose", "v", true, "run in verbose mode")
 
 	if err := root.Execute(); err != nil {
-		fmt.Errorf("could not start: %s\n", err)
+		fmt.Println(fmt.Errorf("could not start: %s", err))
 	}
 }

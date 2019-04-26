@@ -155,7 +155,7 @@ type dht struct {
 }
 
 func newDHT(laddr string, maxFriendsPerSec int) (*dht, error) {
-	conn, err := net.ListenPacket("udp4", laddr)
+	conn, err := net.ListenPacket("udp", laddr)
 	if err != nil {
 		return nil, err
 	}
@@ -277,7 +277,7 @@ func (d *dht) findNode(to string, target nodeID) {
 		"target": string(randBytes(20)),
 	})
 
-	addr, err := net.ResolveUDPAddr("udp4", to)
+	addr, err := net.ResolveUDPAddr("udp", to)
 	if err != nil {
 		return
 	}

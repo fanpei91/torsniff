@@ -1,10 +1,10 @@
 torsniff - 一个 BitTorrent 网络种子嗅探器
 ======================================
 
+
 **简体中文** | [English](./README.md)
 
 ## 介绍
-
 torsniff 是一个种子嗅探器，它从 BitTorrent 网络获取人们下载音乐、电影、游戏、文档等等时所用的种子。
 
 种子含有可用的信息，所以你可用 torsniff 打造属于自己的私人种子库（比如：海盗湾），或者做数据挖掘与分析。
@@ -22,7 +22,7 @@ Usage:
   torsniff [flags]
 
 Flags:
-  -a, --addr string        listen on given address (default "0.0.0.0")
+  -a, --addr string        listen on given address (default all, ipv4 and ipv6)
   -d, --dir string         the directory to store the torrents (default "$HOME/torrents")
   -h, --help               help for torsniff
   -f, --friends int        max fiends to make with per second (default 500)
