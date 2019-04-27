@@ -258,8 +258,6 @@ func main() {
 			log.SetOutput(os.Stdout)
 		}
 
-		fmt.Println(absDir)
-
 		p := &torsniff{
 			laddr:      net.JoinHostPort(addr, strconv.Itoa(int(port))),
 			timeout:    timeout,
