@@ -270,7 +270,7 @@ func main() {
 		return p.run()
 	}
 
-	root.Flags().StringVarP(&addr, "addr", "a", "", "listen on given address")
+	root.Flags().StringVarP(&addr, "addr", "a", "", "listen on given address (default all, ipv4 and ipv6)")
 	root.Flags().Uint16VarP(&port, "port", "p", 6881, "listen on given port")
 	root.Flags().IntVarP(&friends, "friends", "f", 500, "max fiends to make with per second")
 	root.Flags().IntVarP(&peers, "peers", "e", 400, "max peers to connect to download torrents")
